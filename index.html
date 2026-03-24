@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weed Labs — One-man lab shipping AI products</title>
+    <meta name="description" content="One-man lab shipping AI products. Built from Indonesia.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0e12;
+            --card-bg: #111921;
+            --card-border: #1a2633;
+            --teal: #00f0b5;
+            --text: #e4e4e7;
+            --text-muted: #71717a;
+            --text-dim: #52525b;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'DM Mono', monospace;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Subtle grain */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 80px 0 24px;
+            text-align: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 480px;
+            height: 320px;
+            background: radial-gradient(ellipse, rgba(0, 240, 181, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .logo {
+            font-family: var(--font-sans);
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .logo span {
+            color: var(--teal);
+        }
+
+        .tagline {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 48px;
+        }
+
+        /* Author */
+        .author {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 64px;
+        }
+
+        .author-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--teal);
+            font-family: var(--font-mono);
+        }
+
+        .author-label {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-muted);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 4px 12px;
+        }
+
+        .author-label a {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .author-label a:hover {
+            color: var(--teal);
+        }
+
+        /* Section heading */
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
+
+        /* Product grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 28px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.2s;
+            display: block;
+        }
+
+        a.card:hover {
+            border-color: rgba(0, 240, 181, 0.2);
+        }
+
+        .card-coming-soon {
+            opacity: 0.4;
+        }
+
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--bg);
+            margin: 0 auto 16px;
+        }
+
+        .card-icon img {
+            width: 100%;
+            height: 100%;
+            border-radius: 14px;
+            object-fit: cover;
+        }
+
+        .card-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--card-border);
+            padding: 32px 0;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .footer-links a {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--teal);
+        }
+
+        .footer-copy {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .logo { font-size: 36px; }
+            .section-title { font-size: 24px; }
+            .product-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero { padding: 48px 0 16px; }
+            .author { margin-bottom: 48px; }
+        }
+
+        @media (max-width: 400px) {
+            .product-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Hero -->
+        <section class="hero">
+            <div class="logo">weed<span>labs</span></div>
+            <p class="tagline">One-man lab shipping AI products. Built from Indonesia.</p>
+        </section>
+
+        <!-- Author -->
+        <div class="author">
+            <div class="author-avatar">W</div>
+            <div class="author-label"><a href="https://instagram.com/buildwithdeee" target="_blank" rel="noopener">PM by day, builder at night</a></div>
+        </div>
+
+        <!-- Products -->
+        <h2 class="section-title">Products</h2>
+
+        <div class="section-label">Live</div>
+        <div class="product-grid">
+            <a href="https://qlipper.id" target="_blank" rel="noopener" class="card">
+                <div class="card-icon" style="background: #D4A017;">
+                    <img src="https://qlipper.id/assets/logo.webp" alt="Qlipper AI" onerror="this.parentElement.textContent='Q'">
+                </div>
+                <div class="card-name">Qlipper AI</div>
+                <div class="card-desc">AI video clipping engine<br>drop long, get shorts</div>
+            </a>
+            <div class="card">
+                <div class="card-icon" style="background: #60a5fa;">M</div>
+                <div class="card-name">MetaAds Agent</div>
+                <div class="card-desc">Meta Ads automation<br>self-hosted, bring your own key</div>
+            </div>
+        </div>
+
+        <div class="section-label">Coming soon</div>
+        <div class="product-grid">
+            <div class="card card-coming-soon">
+                <div class="card-icon" style="background: #a78bfa;">LP</div>
+                <div class="card-name">LP Engine</div>
+                <div class="card-desc">AI landing page generator<br>describe it, get the code</div>
+            </div>
+            <div class="card card-coming-soon">
+                <div class="card-icon" style="background: #f87171;">CS</div>
+                <div class="card-name">Script Engine</div>
+                <div class="card-desc">AI content scripts<br>pick a format, start recording</div>
+            </div>
+            <div class="card card-coming-soon">
+                <div class="card-icon" style="background: #fbbf24;">LF</div>
+                <div class="card-name">LicenseForge</div>
+                <div class="card-desc">license key backend<br>for indie developers</div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-links">
+                <a href="https://qlipper.id" target="_blank" rel="noopener">Qlipper</a>
+                <a href="https://instagram.com/buildwithdeee" target="_blank" rel="noopener">@buildwithdeee</a>
+                <a href="mailto:hi@weedlabs.online">Email</a>
+            </div>
+            <p class="footer-copy">&copy; 2026 Weed Labs. All systems nominal.</p>
+        </footer>
+    </div>
+</body>
+</html>
