@@ -22,6 +22,40 @@
       text-align: center;
     }
 
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: #22c55e;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .brand-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #888;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-text span { color: #4ade80; }
+
     header h1 {
       font-size: 1.6rem;
       font-weight: 600;
@@ -195,6 +229,14 @@
 <body>
 
 <header>
+  <a href="https://weedlabs.online" class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 4h4v4H4V4zm0 8h4v4H4v-4zm0 8h4v-4h4v4h4v-4h4v4h4v-8h-4v-4h4V4h-4v4h-4V4h-4v4H8V4H4v4h4v4H4v8z" fill="white" fill-opacity="0.9"/>
+      </svg>
+    </div>
+    <span class="brand-text"><span>weed</span>labs.online</span>
+  </a>
   <h1>PhotoFrame</h1>
   <p>Upload a frame template + your photo, then download.</p>
 </header>
@@ -239,7 +281,9 @@
   </div>
 </div>
 
-<footer>weedlabs.online/photoframe</footer>
+<footer>
+  <a href="https://weedlabs.online" style="color:#555;text-decoration:none;">weedlabs.online</a> / photoframe
+</footer>
 
 <script>
 (function() {
