@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhotoFrame - weedlabs.online</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      padding: 2rem 1rem 1rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    header p {
+      color: #888;
+      font-size: 0.9rem;
+      margin-top: 0.3rem;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 540px;
+      padding: 0 1rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    /* Upload buttons */
+    .upload-row {
+      display: flex;
+      gap: 0.8rem;
+    }
+
+    .upload-btn {
+      flex: 1;
+      position: relative;
+      background: #1a1a1a;
+      border: 2px dashed #333;
+      border-radius: 12px;
+      padding: 1.2rem 0.8rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .upload-btn:hover {
+      border-color: #555;
+      background: #222;
+    }
+
+    .upload-btn.loaded {
+      border-color: #4ade80;
+      border-style: solid;
+    }
+
+    .upload-btn input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .upload-btn .icon {
+      font-size: 1.8rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .upload-btn .label {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .upload-btn .hint {
+      font-size: 0.72rem;
+      color: #666;
+      margin-top: 0.2rem;
+    }
+
+    /* Canvas area */
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      background: #111;
+      border-radius: 12px;
+      overflow: hidden;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .canvas-wrap:active { cursor: grabbing; }
+
+    .canvas-wrap canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .canvas-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #444;
+      font-size: 0.9rem;
+      pointer-events: none;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .slider-row label {
+      font-size: 0.8rem;
+      color: #888;
+      width: 50px;
+      flex-shrink: 0;
+    }
+
+    .slider-row input[type="range"] {
+      flex: 1;
+      accent-color: #4ade80;
+      height: 6px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.8rem;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: #4ade80;
+      color: #0a0a0a;
+    }
+
+    .btn-secondary {
+      background: #222;
+      color: #ccc;
+    }
+
+    .btn:not(:disabled):hover { opacity: 0.85; }
+
+    footer {
+      padding: 2rem 1rem;
+      text-align: center;
+      color: #444;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>PhotoFrame</h1>
+  <p>Upload a frame template + your photo, then download.</p>
+</header>
+
+<div class="app">
+  <!-- Upload row -->
+  <div class="upload-row">
+    <div class="upload-btn" id="frameBtn">
+      <input type="file" accept="image/png" id="frameInput">
+      <div class="icon">🖼</div>
+      <div class="label">Frame Template</div>
+      <div class="hint">PNG with transparency</div>
+    </div>
+    <div class="upload-btn" id="photoBtn">
+      <input type="file" accept="image/*" id="photoInput">
+      <div class="icon">📷</div>
+      <div class="label">Your Photo</div>
+      <div class="hint">Any image file</div>
+    </div>
+  </div>
+
+  <!-- Canvas -->
+  <div class="canvas-wrap" id="canvasWrap">
+    <canvas id="canvas"></canvas>
+    <div class="canvas-placeholder" id="placeholder">Upload a frame and photo to start</div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="slider-row">
+      <label>Zoom</label>
+      <input type="range" id="zoomSlider" min="10" max="300" value="100">
+    </div>
+    <div class="slider-row">
+      <label>Rotate</label>
+      <input type="range" id="rotateSlider" min="-180" max="180" value="0">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="resetBtn">Reset</button>
+      <button class="btn btn-primary" id="downloadBtn" disabled>Download</button>
+    </div>
+  </div>
+</div>
+
+<footer>weedlabs.online/photoframe</footer>
+
+<script>
+(function() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const wrap = document.getElementById('canvasWrap');
+  const placeholder = document.getElementById('placeholder');
+  const frameInput = document.getElementById('frameInput');
+  const photoInput = document.getElementById('photoInput');
+  const zoomSlider = document.getElementById('zoomSlider');
+  const rotateSlider = document.getElementById('rotateSlider');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const frameBtn = document.getElementById('frameBtn');
+  const photoBtn = document.getElementById('photoBtn');
+
+  let frameImg = null;
+  let photoImg = null;
+
+  // Photo transform state
+  let photo = { x: 0, y: 0, scale: 1, rotation: 0 };
+
+  // Drag state
+  let dragging = false;
+  let dragStart = { x: 0, y: 0 };
+  let photoStart = { x: 0, y: 0 };
+
+  // Canvas size (use frame dimensions, default 800x800)
+  const SIZE = 800;
+
+  function initCanvas() {
+    canvas.width = SIZE;
+    canvas.height = SIZE;
+  }
+
+  function loadImage(file) {
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve(img);
+      };
+      img.src = url;
+    });
+  }
+
+  function resizeCanvas() {
+    if (frameImg) {
+      canvas.width = frameImg.naturalWidth;
+      canvas.height = frameImg.naturalHeight;
+    } else {
+      canvas.width = SIZE;
+      canvas.height = SIZE;
+    }
+  }
+
+  function draw() {
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Draw photo (behind frame)
+    if (photoImg) {
+      ctx.save();
+      ctx.translate(photo.x + w / 2, photo.y + h / 2);
+      ctx.rotate(photo.rotation * Math.PI / 180);
+      ctx.scale(photo.scale, photo.scale);
+
+      const pw = photoImg.naturalWidth;
+      const ph = photoImg.naturalHeight;
+      ctx.drawImage(photoImg, -pw / 2, -ph / 2, pw, ph);
+      ctx.restore();
+    }
+
+    // Draw frame (on top)
+    if (frameImg) {
+      ctx.drawImage(frameImg, 0, 0, w, h);
+    }
+
+    // Show/hide placeholder
+    const hasContent = frameImg || photoImg;
+    placeholder.style.display = hasContent ? 'none' : 'flex';
+    downloadBtn.disabled = !(frameImg && photoImg);
+  }
+
+  function fitPhotoToCanvas() {
+    if (!photoImg) return;
+    const w = canvas.width;
+    const h = canvas.height;
+    const pw = photoImg.naturalWidth;
+    const ph = photoImg.naturalHeight;
+    const scale = Math.max(w / pw, h / ph);
+    photo.scale = scale;
+    photo.x = 0;
+    photo.y = 0;
+    photo.rotation = 0;
+    zoomSlider.value = Math.round(scale * 100);
+    rotateSlider.value = 0;
+  }
+
+  // File inputs
+  frameInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    frameImg = await loadImage(file);
+    frameBtn.classList.add('loaded');
+    resizeCanvas();
+    fitPhotoToCanvas();
+    draw();
+  });
+
+  photoInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    photoImg = await loadImage(file);
+    photoBtn.classList.add('loaded');
+    fitPhotoToCanvas();
+    draw();
+  });
+
+  // Zoom
+  zoomSlider.addEventListener('input', () => {
+    photo.scale = parseInt(zoomSlider.value) / 100;
+    draw();
+  });
+
+  // Rotate
+  rotateSlider.addEventListener('input', () => {
+    photo.rotation = parseInt(rotateSlider.value);
+    draw();
+  });
+
+  // Drag (mouse)
+  wrap.addEventListener('mousedown', (e) => {
+    if (!photoImg) return;
+    dragging = true;
+    dragStart = { x: e.clientX, y: e.clientY };
+    photoStart = { x: photo.x, y: photo.y };
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    const rect = wrap.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    photo.x = photoStart.x + (e.clientX - dragStart.x) * scaleX;
+    photo.y = photoStart.y + (e.clientY - dragStart.y) * scaleY;
+    draw();
+  });
+
+  window.addEventListener('mouseup', () => { dragging = false; });
+
+  // Drag (touch)
+  wrap.addEventListener('touchstart', (e) => {
+    if (!photoImg || e.touches.length !== 1) return;
+    dragging = true;
+    const t = e.touches[0];
+    dragStart = { x: t.clientX, y: t.clientY };
+    photoStart = { x: photo.x, y: photo.y };
+  });
+
+  wrap.addEventListener('touchmove', (e) => {
+    if (!dragging || e.touches.length !== 1) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    const rect = wrap.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    photo.x = photoStart.x + (t.clientX - dragStart.x) * scaleX;
+    photo.y = photoStart.y + (t.clientY - dragStart.y) * scaleY;
+    draw();
+  }, { passive: false });
+
+  wrap.addEventListener('touchend', () => { dragging = false; });
+
+  // Reset
+  resetBtn.addEventListener('click', () => {
+    fitPhotoToCanvas();
+    draw();
+  });
+
+  // Download
+  downloadBtn.addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.download = 'photoframe.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+
+  // Init
+  initCanvas();
+  draw();
+})();
+</script>
+
+</body>
+</html>
