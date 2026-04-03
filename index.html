@@ -240,6 +240,18 @@
             line-height: 1.4;
         }
 
+        .card-badge {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--teal);
+            background: var(--bg);
+            border: 1px solid var(--card-border);
+            border-radius: 100px;
+            padding: 2px 8px;
+            margin-top: 8px;
+        }
+
         /* Footer */
         footer {
             border-top: 1px solid var(--card-border);
@@ -317,6 +329,14 @@
 
         <div class="section-label">Live</div>
         <div class="product-grid">
+            <a href="https://pidgoapp.online" target="_blank" rel="noopener" class="card">
+                <div class="card-icon" style="background: #0a0a0f;">
+                    <img src="/lpengine/assets/mascot/pidgo-hero.png" alt="Pidgoapp">
+                </div>
+                <div class="card-name">Pidgoapp</div>
+                <div class="card-desc">AI landing page generator<br>with tracking pixel baked-in</div>
+                <div class="card-badge">pidgoapp.online</div>
+            </a>
             <a href="https://qlipper.id" target="_blank" rel="noopener" class="card">
                 <div class="card-icon" style="background: #D4A017;">
                     <img src="https://qlipper.id/assets/logo.webp" alt="Qlipper AI" onerror="this.parentElement.textContent='Q'">
@@ -324,11 +344,6 @@
                 <div class="card-name">Qlipper AI</div>
                 <div class="card-desc">AI video clipping engine<br>drop long, get shorts</div>
             </a>
-            <div class="card">
-                <div class="card-icon" style="background: #60a5fa;">M</div>
-                <div class="card-name">MetaAds Agent</div>
-                <div class="card-desc">Meta Ads automation<br>self-hosted, bring your own key</div>
-            </div>
         </div>
 
         <div class="section-label">Free tools</div>
@@ -356,9 +371,9 @@
         <div class="section-label">Coming soon</div>
         <div class="product-grid">
             <div class="card card-coming-soon">
-                <div class="card-icon" style="background: #a78bfa;">LP</div>
-                <div class="card-name">LP Engine</div>
-                <div class="card-desc">AI landing page generator<br>describe it, get the code</div>
+                <div class="card-icon" style="background: #60a5fa;">M</div>
+                <div class="card-name">MetaAds Agent</div>
+                <div class="card-desc">Meta Ads automation<br>self-hosted, bring your own key</div>
             </div>
             <div class="card card-coming-soon">
                 <div class="card-icon" style="background: #f87171;">CS</div>
@@ -374,6 +389,7 @@
 
         <footer>
             <div class="footer-links">
+                <a href="https://pidgoapp.online" target="_blank" rel="noopener">Pidgoapp</a>
                 <a href="https://qlipper.id" target="_blank" rel="noopener">Qlipper</a>
                 <a href="https://instagram.com/buildwithdeee" target="_blank" rel="noopener">@buildwithdeee</a>
                 <a href="mailto:hi@weedlabs.online">Email</a>
