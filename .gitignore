@@ -1,0 +1,8 @@
+# macOS resource-fork metadata (created on non-APFS volumes)
+._*
+.DS_Store
+
+# Editor / OS noise
+*.swp
+.vscode/
+.idea/
