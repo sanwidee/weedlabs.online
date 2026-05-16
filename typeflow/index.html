@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0716" />
+  <title>TypeFlow — Local voice typing for macOS</title>
+  <meta name="description" content="Free, open-source voice-to-text dictation for macOS. Powered by Whisper, runs entirely on your machine. Press a key, speak, paste anywhere." />
+  <meta property="og:title" content="TypeFlow — Local voice typing for macOS" />
+  <meta property="og:description" content="Press a key, speak, paste. 100% local Whisper. Free and open source." />
+  <meta property="og:image" content="assets/icon.png" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/png" href="assets/icon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0716;
+      --bg-1: #110b1f;
+      --bg-2: #18112a;
+      --card: rgba(255, 255, 255, 0.035);
+      --card-strong: rgba(255, 255, 255, 0.065);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.15);
+      --text: #ECE9F8;
+      --text-dim: #B4ADCD;
+      --text-mute: #847C9F;
+      --accent-1: #3730A3;
+      --accent-2: #7C3AED;
+      --accent-3: #DB2777;
+      --grad-brand: linear-gradient(135deg, #3730A3 0%, #7C3AED 50%, #DB2777 100%);
+      --grad-soft: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(219,39,119,0.15));
+      --grad-text: linear-gradient(135deg, #C4B5FD 0%, #F0ABFC 100%);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ====================== Background atmosphere ====================== */
+    .bg-atmos {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+    }
+    .bg-blob {
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.35;
+    }
+    .bg-blob.b1 { background: #4F46E5; top: -200px; left: -200px; }
+    .bg-blob.b2 { background: #C026D3; top: 30%; right: -200px; opacity: 0.25; }
+    .bg-blob.b3 { background: #6366F1; bottom: -200px; left: 30%; opacity: 0.2; }
+
+    /* ====================== Nav ====================== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      background: rgba(10, 7, 22, 0.7);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: -0.01em;
+    }
+    .brand img { width: 28px; height: 28px; border-radius: 7px; }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 14.5px;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .btn-gh {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    .btn-gh:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--border-strong);
+    }
+    .btn-gh svg { width: 16px; height: 16px; }
+
+    /* ====================== Hero ====================== */
+    .hero {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 80px 24px 100px;
+      text-align: center;
+      position: relative;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 28px;
+      font-weight: 500;
+    }
+    .pill .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 8px #4ade80;
+    }
+    h1 {
+      font-size: clamp(40px, 7vw, 76px);
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+      font-weight: 800;
+      margin-bottom: 22px;
+    }
+    h1 .grad {
+      background: var(--grad-text);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .lede {
+      max-width: 640px;
+      margin: 0 auto 38px;
+      font-size: clamp(17px, 2vw, 20px);
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+    .cta-row {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: var(--grad-brand);
+      color: white;
+      box-shadow: 0 12px 36px -8px rgba(124, 58, 237, 0.55);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 44px -8px rgba(124, 58, 237, 0.7);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: var(--border-strong);
+    }
+    .btn svg { width: 18px; height: 18px; }
+    .cta-sub {
+      font-size: 13px;
+      color: var(--text-mute);
+    }
+
+    /* ====================== Hero visual: animated orb ====================== */
+    .hero-visual {
+      margin-top: 60px;
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+    .device-frame {
+      width: 100%;
+      max-width: 680px;
+      aspect-ratio: 4 / 3;
+      background: linear-gradient(180deg, #18112a 0%, #0d0820 100%);
+      border-radius: 18px;
+      border: 1px solid var(--border-strong);
+      box-shadow:
+        0 40px 80px -20px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .device-traffic {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      display: flex;
+      gap: 7px;
+    }
+    .device-traffic span {
+      width: 11px; height: 11px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .device-traffic span:nth-child(1) { background: #ff5f56; }
+    .device-traffic span:nth-child(2) { background: #ffbd2e; }
+    .device-traffic span:nth-child(3) { background: #27c93f; }
+
+    .orb-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+    }
+    .orb {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%,
+        #C4B5FD 0%,
+        #8B5CF6 35%,
+        #6D28D9 75%,
+        #4C1D95 100%);
+      box-shadow:
+        0 0 80px 20px rgba(124, 58, 237, 0.3),
+        0 0 160px 40px rgba(168, 85, 247, 0.15),
+        inset 0 -20px 40px rgba(0, 0, 0, 0.25);
+      animation: breathe 4s ease-in-out infinite;
+      position: relative;
+    }
+    .orb::after {
+      content: '';
+      position: absolute;
+      top: 20%;
+      left: 25%;
+      width: 45%;
+      height: 25%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.55), rgba(255,255,255,0) 70%);
+    }
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 80px 20px rgba(124, 58, 237, 0.3), 0 0 160px 40px rgba(168, 85, 247, 0.15), inset 0 -20px 40px rgba(0, 0, 0, 0.25); }
+      50%      { transform: scale(1.04); box-shadow: 0 0 100px 28px rgba(124, 58, 237, 0.42), 0 0 200px 50px rgba(168, 85, 247, 0.22), inset 0 -20px 40px rgba(0, 0, 0, 0.25); }
+    }
+    .orb-label {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .orb-hint {
+      font-size: 13px;
+      color: var(--text-mute);
+    }
+    .orb-hint kbd {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: 12px;
+    }
+
+    /* ====================== Section heading ====================== */
+    section.bordered {
+      border-top: 1px solid var(--border);
+      padding: 90px 24px;
+    }
+    .container { max-width: 1180px; margin: 0 auto; }
+    .section-head { text-align: center; margin-bottom: 56px; }
+    .section-eyebrow {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--grad-brand);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: clamp(30px, 4.5vw, 46px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .section-sub {
+      max-width: 580px;
+      margin: 16px auto 0;
+      color: var(--text-dim);
+      font-size: 17px;
+    }
+
+    /* ====================== Feature grid ====================== */
+    .grid { display: grid; gap: 18px; }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 800px) {
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .feature {
+      padding: 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      transition: all 0.2s;
+    }
+    .feature:hover {
+      background: var(--card-strong);
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+    }
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+      background: var(--grad-soft);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+    .feature-icon svg { width: 22px; height: 22px; color: #C4B5FD; }
+    .feature h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+    .feature p {
+      color: var(--text-dim);
+      font-size: 14.5px;
+      line-height: 1.6;
+    }
+
+    /* ====================== Steps ====================== */
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; counter-reset: step; }
+    @media (max-width: 800px) { .steps { grid-template-columns: 1fr; } }
+    .step {
+      position: relative;
+      padding: 30px 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      top: -16px;
+      left: 24px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--grad-brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+      color: white;
+      box-shadow: 0 8px 20px -4px rgba(124, 58, 237, 0.5);
+    }
+    .step h3 { font-size: 18px; font-weight: 700; margin: 16px 0 8px; }
+    .step p { color: var(--text-dim); font-size: 14.5px; }
+    .step kbd {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-family: ui-monospace, monospace;
+      font-size: 12.5px;
+    }
+
+    /* ====================== Model table ====================== */
+    .table-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+    th, td {
+      padding: 16px 20px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      font-weight: 600;
+      color: var(--text-mute);
+      font-size: 12.5px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    tr:last-child td { border-bottom: none; }
+    td:first-child { font-weight: 600; }
+    .tag {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: rgba(124, 58, 237, 0.18);
+      color: #C4B5FD;
+      border: 1px solid rgba(124, 58, 237, 0.3);
+    }
+
+    /* ====================== FAQ ====================== */
+    details {
+      padding: 22px 26px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    details[open] { border-color: var(--border-strong); }
+    details summary {
+      font-weight: 600;
+      font-size: 16px;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    details summary::after {
+      content: '+';
+      font-size: 22px;
+      font-weight: 300;
+      color: var(--text-mute);
+      transition: transform 0.2s;
+    }
+    details[open] summary::after { transform: rotate(45deg); }
+    details summary::-webkit-details-marker { display: none; }
+    .faq-body {
+      margin-top: 14px;
+      color: var(--text-dim);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+    .faq-body code {
+      background: rgba(255,255,255,0.07);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .faq-grid { max-width: 760px; margin: 0 auto; }
+
+    /* ====================== Final CTA ====================== */
+    .final-cta {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 64px 40px;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.18), rgba(219, 39, 119, 0.14));
+      border: 1px solid var(--border-strong);
+      border-radius: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .final-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 20% 0%, rgba(168, 85, 247, 0.25), transparent 60%),
+                  radial-gradient(ellipse at 80% 100%, rgba(219, 39, 119, 0.2), transparent 60%);
+      pointer-events: none;
+    }
+    .final-cta * { position: relative; }
+    .final-cta h2 {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 14px;
+    }
+    .final-cta p { color: var(--text-dim); font-size: 17px; margin-bottom: 28px; }
+
+    /* ====================== Footer ====================== */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 24px;
+      margin-top: 60px;
+    }
+    .footer-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 22px;
+    }
+    .footer-left { display: flex; align-items: center; gap: 10px; color: var(--text-mute); font-size: 14px; }
+    .footer-left img { width: 22px; height: 22px; border-radius: 6px; }
+    .footer-links { display: flex; gap: 26px; font-size: 14px; }
+    .footer-links a { color: var(--text-dim); text-decoration: none; }
+    .footer-links a:hover { color: var(--text); }
+    .weed { background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 600; }
+
+    /* utility */
+    .text-grad {
+      background: var(--grad-text);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-atmos">
+    <div class="bg-blob b1"></div>
+    <div class="bg-blob b2"></div>
+    <div class="bg-blob b3"></div>
+  </div>
+
+  <!-- ============ Nav ============ -->
+  <nav>
+    <div class="nav-inner">
+      <a class="brand" href="#">
+        <img src="assets/icon.png" alt="TypeFlow" />
+        <span>TypeFlow</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#models">Models</a>
+        <a href="#faq">FAQ</a>
+        <a class="btn-gh" href="https://github.com/sanwidee/typeflow" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.3-3.2-.1-.4-.6-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.6.2 2.8.1 3.2.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============ Hero ============ -->
+  <header class="hero">
+    <div class="pill">
+      <span class="dot"></span>
+      Free &amp; open source — part of the Weedlabs suite
+    </div>
+    <h1>
+      Type by voice.<br />
+      <span class="grad">Locally. Privately. Free.</span>
+    </h1>
+    <p class="lede">
+      TypeFlow turns your voice into text on macOS — no cloud, no account, no monthly fee.
+      Press a key, speak, paste anywhere. Whisper runs entirely on your Mac.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://github.com/sanwidee/typeflow/releases/latest" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download for macOS
+      </a>
+      <a class="btn btn-secondary" href="https://github.com/sanwidee/typeflow" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.3-3.2-.1-.4-.6-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.6.2 2.8.1 3.2.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
+        Star on GitHub
+      </a>
+    </div>
+    <p class="cta-sub">macOS 13 or later · Apple Silicon recommended · ~500 MB</p>
+
+    <!-- Hero device mockup -->
+    <div class="hero-visual">
+      <div class="device-frame">
+        <div class="device-traffic"><span></span><span></span><span></span></div>
+        <div class="orb-wrap">
+          <div class="orb"></div>
+          <div class="orb-label">Ready</div>
+          <div class="orb-hint">Press <kbd>⌘</kbd> <kbd>\</kbd> to record</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ Features ============ -->
+  <section id="features" class="bordered">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-eyebrow">What's inside</div>
+        <h2 class="section-title">Everything you need. Nothing you don't.</h2>
+        <p class="section-sub">Built on open-source Whisper. No subscription, no telemetry, no API key.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="feature">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M19 10a7 7 0 0 1-14 0M12 18v4M8 22h8"/></svg>
+          </div>
+          <h3>Press, speak, paste</h3>
+          <p>A configurable global hotkey starts recording from any app. Release and your transcript is on the clipboard, ready for <kbd>⌘V</kbd>.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>100% on your machine</h3>
+          <p>Whisper runs locally via <code>faster-whisper</code>. No audio leaves your Mac. No account. No telemetry. Works on a plane.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z"/></svg>
+          </div>
+          <h3>99 languages, one model</h3>
+          <p>Whisper natively supports nearly every language. English &amp; Bahasa Indonesia exposed in the UI — code-switching works.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <h3>Pick your accuracy/speed tier</h3>
+          <p>From a 240 MB <strong>small</strong> model that turns words into text in under a second, up to <strong>large-v3-turbo</strong> for near-perfect transcripts.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>
+          </div>
+          <h3>Optional AI polishing</h3>
+          <p>A tiny local LLM (Qwen 2.5) can rewrite your transcript in a more fluent, friendly, or professional tone — still on-device.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+          </div>
+          <h3>Open source, MIT licensed</h3>
+          <p>Every line of code is public. Fork it, audit it, modify it, ship your own version. The source on GitHub <em>is</em> the product.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ How it works ============ -->
+  <section id="how" class="bordered">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-eyebrow">How it works</div>
+        <h2 class="section-title">Three steps. Less than two seconds.</h2>
+        <p class="section-sub">No setup. No prompts. No "Did you mean…"</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <h3>Press your hotkey</h3>
+          <p>Default is <kbd>⌘ \</kbd>. Rebind to anything you want from inside the app — TypeFlow listens system-wide.</p>
+        </div>
+        <div class="step">
+          <h3>Speak naturally</h3>
+          <p>The orb pulses with your voice. Mix English and Indonesian freely. Pause when you need to. Press the key again to stop.</p>
+        </div>
+        <div class="step">
+          <h3>Paste anywhere</h3>
+          <p>Your transcript is already on the clipboard. <kbd>⌘ V</kbd> in Slack, Notion, Gmail, your terminal — wherever you were just typing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Models ============ -->
+  <section id="models" class="bordered">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-eyebrow">Pick your tier</div>
+        <h2 class="section-title">Trade size for accuracy. Your call.</h2>
+        <p class="section-sub">All models run locally on Apple Silicon. Downloaded once, then offline forever.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Disk</th>
+              <th>Speed</th>
+              <th>Best for</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Small</td>
+              <td>240 MB</td>
+              <td>~0.5s</td>
+              <td>Quick notes, English-heavy speech</td>
+              <td><span class="tag">Default</span></td>
+            </tr>
+            <tr>
+              <td>Medium</td>
+              <td>1.5 GB</td>
+              <td>~1s</td>
+              <td>Daily use, mixed-language</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Large v3 Turbo</td>
+              <td>1.5 GB</td>
+              <td>~1.5s</td>
+              <td>ChatGPT-grade transcription</td>
+              <td><span class="tag">Recommended</span></td>
+            </tr>
+            <tr>
+              <td>Large v3</td>
+              <td>3 GB</td>
+              <td>~3s</td>
+              <td>Long meetings, max accuracy</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section id="faq" class="bordered">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-eyebrow">FAQ</div>
+        <h2 class="section-title">Answers, before you ask.</h2>
+      </div>
+      <div class="faq-grid">
+        <details>
+          <summary>Is it really free?</summary>
+          <div class="faq-body">
+            Yes. MIT-licensed open source. There's no paid tier, no usage limit, no "pro" version. Models download from Hugging Face on first use and stay on your machine forever.
+          </div>
+        </details>
+        <details>
+          <summary>Does my voice get sent to a server?</summary>
+          <div class="faq-body">
+            No. All transcription runs locally via <code>faster-whisper</code>. The only network activity is the one-time model download. Set <code>HF_HUB_DISABLE_TELEMETRY=1</code> in your env if you want to suppress even that detail.
+          </div>
+        </details>
+        <details>
+          <summary>Why is the app unsigned?</summary>
+          <div class="faq-body">
+            Apple charges $99/year for a Developer ID, which isn't reasonable for a free hobby project. The first time you open TypeFlow, right-click → <strong>Open</strong> instead of double-clicking, then click <strong>Open</strong> in the warning dialog. After that, it opens normally.
+          </div>
+        </details>
+        <details>
+          <summary>Does it work on Intel Macs?</summary>
+          <div class="faq-body">
+            Probably, but it's only been built &amp; tested on Apple Silicon. The Whisper models will run, just slower. The optional LLM polishing step requires <code>mlx-lm</code> which is Apple Silicon only.
+          </div>
+        </details>
+        <details>
+          <summary>What about Windows or Linux?</summary>
+          <div class="faq-body">
+            macOS-only for now. The UI is built on native AppKit (<code>rumps</code> + PyObjC). Cross-platform would mean rewriting the menu bar / global hotkey / overlay layers — meaningful work, not in scope yet.
+          </div>
+        </details>
+        <details>
+          <summary>How do I rebind the hotkey?</summary>
+          <div class="faq-body">
+            Open the TypeFlow window, click the hotkey button at the bottom, then press whichever key combination you'd like. Escape cancels. The new binding is saved to <code>~/.typeflow.json</code>.
+          </div>
+        </details>
+        <details>
+          <summary>Can it translate?</summary>
+          <div class="faq-body">
+            Whisper transcribes in the source language. For "voice in English → text in Indonesian" (or vice versa), enable the optional <strong>Tone</strong> → <em>Translate to…</em> option, which runs a small local LLM after transcription.
+          </div>
+        </details>
+        <details>
+          <summary>I want a feature / found a bug.</summary>
+          <div class="faq-body">
+            Open an issue on the <a href="https://github.com/sanwidee/typeflow/issues" target="_blank" rel="noopener" style="color:#C4B5FD;">GitHub repo</a>. PRs welcome — see <code>README.md</code> for the build instructions.
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Final CTA ============ -->
+  <section style="padding: 90px 24px;">
+    <div class="final-cta">
+      <h2>Stop typing. Start talking.</h2>
+      <p>Download TypeFlow, grant a few permissions, and you'll be back to your terminal in 90 seconds.</p>
+      <div class="cta-row" style="margin-bottom: 0;">
+        <a class="btn btn-primary" href="https://github.com/sanwidee/typeflow/releases/latest" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download for macOS
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/sanwidee/typeflow" target="_blank" rel="noopener">View source</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Footer ============ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-left">
+        <img src="assets/icon.png" alt="TypeFlow" />
+        <span>TypeFlow — a free part of the <span class="weed">Weedlabs</span> suite</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/sanwidee/typeflow" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/sanwidee/typeflow/releases" target="_blank" rel="noopener">Releases</a>
+        <a href="https://github.com/sanwidee/typeflow/issues" target="_blank" rel="noopener">Issues</a>
+        <a href="https://weedlabs.online" target="_blank" rel="noopener">Weedlabs</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
