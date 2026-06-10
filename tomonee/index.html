@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tomonee — Yang capek itu kepala. Bukan dompet.</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070d1a;
+    --bg2: #0c1628;
+    --bg3: #111e35;
+    --teal: #00d4aa;
+    --teal2: #00b894;
+    --gold: #f59e0b;
+    --red: #ff4757;
+    --purple: #7c3aed;
+    --text: #e8f0fe;
+    --text2: #8fa3c8;
+    --border: rgba(0,212,170,0.15);
+    --glass: rgba(12,22,40,0.7);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+  h1,h2,h3,h4 { font-family: 'Space Grotesk', sans-serif; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 1rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(7,13,26,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.4rem; font-weight: 800;
+    background: linear-gradient(135deg, var(--teal), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+  }
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .nav-links a { color: var(--text2); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--teal); }
+  .nav-cta {
+    background: var(--teal); color: var(--bg) !important;
+    padding: 0.5rem 1.2rem; border-radius: 8px;
+    font-weight: 600; font-size: 0.85rem !important;
+    transition: all 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--teal2) !important; transform: translateY(-1px); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+  .hamburger span { width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 6rem 2rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,170,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,170,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+  .hero-glow {
+    position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(0,212,170,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    max-width: 1200px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    position: relative;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.25);
+    padding: 0.4rem 1rem; border-radius: 100px;
+    font-size: 0.8rem; color: var(--teal); margin-bottom: 1.5rem;
+  }
+  .hero-badge::before { content: '●'; font-size: 0.5rem; animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+  h1.hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800; line-height: 1.1;
+    letter-spacing: -1.5px; margin-bottom: 1.5rem;
+  }
+  .hero-title .accent { color: var(--teal); }
+  .hero-title .gold { color: var(--gold); }
+  .hero-sub {
+    color: var(--text2); font-size: 1.1rem;
+    line-height: 1.7; margin-bottom: 2.5rem; max-width: 480px;
+  }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: linear-gradient(135deg, var(--teal), var(--teal2));
+    color: var(--bg); padding: 0.9rem 2rem; border-radius: 12px;
+    font-weight: 700; font-size: 1rem; text-decoration: none;
+    box-shadow: 0 0 30px rgba(0,212,170,0.3);
+    transition: all 0.3s; border: none; cursor: pointer;
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(0,212,170,0.5); }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: transparent; color: var(--text2);
+    padding: 0.9rem 2rem; border-radius: 12px;
+    font-weight: 600; font-size: 1rem; text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s;
+  }
+  .btn-secondary:hover { border-color: var(--teal); color: var(--teal); transform: translateY(-2px); }
+
+  /* HERO VISUAL */
+  .hero-visual { position: relative; }
+  .dashboard-card {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    animation: float 6s ease-in-out infinite;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
+  .dash-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; }
+  .dash-badge { background: rgba(0,212,170,0.15); color: var(--teal); padding: 0.2rem 0.6rem; border-radius: 100px; font-size: 0.7rem; }
+  .dash-total { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 800; color: var(--text); margin-bottom: 1.2rem; }
+  .dash-total span { color: var(--teal); }
+  .debt-bars { display: flex; flex-direction: column; gap: 0.7rem; }
+  .debt-bar-item { display: flex; flex-direction: column; gap: 0.3rem; }
+  .debt-bar-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text2); }
+  .debt-bar-track { height: 6px; background: rgba(255,255,255,0.08); border-radius: 100px; overflow: hidden; }
+  .debt-bar-fill { height: 100%; border-radius: 100px; animation: fillbar 2s ease forwards; }
+  @keyframes fillbar { from{width:0} }
+  .bar-kpr { background: linear-gradient(90deg,#7c3aed,#a855f7); width: 78%; }
+  .bar-kk { background: linear-gradient(90deg,#ff4757,#ff6b81); width: 45%; }
+  .bar-motor { background: linear-gradient(90deg,#f59e0b,#fbbf24); width: 32%; }
+  .bar-pinjol { background: linear-gradient(90deg,#00d4aa,#00b894); width: 18%; }
+  .float-card {
+    position: absolute;
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.8rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .float-card-1 { top: -20px; right: -30px; animation: float2 7s ease-in-out infinite; }
+  .float-card-2 { bottom: 20px; left: -40px; animation: float2 5s ease-in-out infinite 1s; }
+  @keyframes float2 { 0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-8px) rotate(2deg)} }
+  .fc-label { color: var(--text2); margin-bottom: 0.2rem; }
+  .fc-val { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1rem; }
+  .fc-val.green { color: var(--teal); }
+  .fc-val.red { color: var(--red); }
+  .hero-stats { display: flex; gap: 2rem; margin-top: 2.5rem; }
+  .hstat { }
+  .hstat-num { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--teal); }
+  .hstat-label { font-size: 0.8rem; color: var(--text2); }
+
+  /* SECTION BASE */
+  section { padding: 6rem 2rem; }
+  .container { max-width: 1200px; margin: 0 auto; width: 100%; }
+  .section-tag {
+    display: inline-block;
+    background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.2);
+    color: var(--teal); padding: 0.3rem 1rem; border-radius: 100px;
+    font-size: 0.8rem; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800; line-height: 1.15;
+    letter-spacing: -1px; margin-bottom: 1.2rem;
+  }
+  .section-sub { color: var(--text2); font-size: 1.05rem; line-height: 1.7; max-width: 600px; }
+  .text-center { text-align: center; }
+  .text-center .section-sub { margin: 0 auto; }
+
+  /* PROBLEM */
+  .problem { background: var(--bg2); }
+  .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .pain-cards { display: flex; flex-direction: column; gap: 1rem; }
+  .pain-card {
+    background: rgba(255,71,87,0.07);
+    border: 1px solid rgba(255,71,87,0.2);
+    border-radius: 14px; padding: 1.2rem 1.5rem;
+    display: flex; align-items: flex-start; gap: 1rem;
+    transition: all 0.3s;
+  }
+  .pain-card:hover { border-color: rgba(255,71,87,0.4); transform: translateX(4px); }
+  .pain-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .pain-title { font-weight: 600; margin-bottom: 0.3rem; }
+  .pain-desc { color: var(--text2); font-size: 0.9rem; }
+  .solution-card {
+    background: rgba(0,212,170,0.05);
+    border: 1px solid rgba(0,212,170,0.2);
+    border-radius: 20px; padding: 2rem;
+  }
+  .solution-title { color: var(--teal); font-family: 'Space Grotesk', sans-serif; font-weight: 700; margin-bottom: 1rem; font-size: 1.1rem; }
+  .solution-items { display: flex; flex-direction: column; gap: 0.8rem; }
+  .solution-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    color: var(--text2); font-size: 0.95rem;
+  }
+  .solution-item::before { content: '✓'; color: var(--teal); font-weight: 700; flex-shrink: 0; }
+
+  /* FEATURES BENTO */
+  .features { background: var(--bg); }
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto;
+    gap: 1.2rem;
+    margin-top: 3rem;
+  }
+  .bento-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.8rem;
+    transition: all 0.4s;
+    overflow: hidden;
+    position: relative;
+  }
+  .bento-card:hover { border-color: rgba(0,212,170,0.4); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(0,212,170,0.06); }
+  .bento-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(0,212,170,0.06), transparent 60%);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .bento-card:hover::before { opacity: 1; }
+  .bento-1 { grid-column: span 7; }
+  .bento-2 { grid-column: span 5; }
+  .bento-3 { grid-column: span 5; }
+  .bento-4 { grid-column: span 7; }
+  .bento-5 { grid-column: span 12; }
+  .bento-tag { color: var(--teal); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.7rem; }
+  .bento-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .bento-desc { color: var(--text2); font-size: 0.88rem; line-height: 1.6; margin-bottom: 1.5rem; }
+
+  /* Donut chart */
+  .donut-wrap { display: flex; align-items: center; gap: 1.5rem; }
+  .donut-svg { flex-shrink: 0; }
+  .donut-circle { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dasharray 1s ease; }
+  .donut-legends { display: flex; flex-direction: column; gap: 0.5rem; }
+  .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .legend-val { color: var(--text2); }
+
+  /* Slider calculator */
+  .calc-row { margin-bottom: 1rem; }
+  .calc-label { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text2); margin-bottom: 0.4rem; }
+  .calc-val { color: var(--teal); font-weight: 700; }
+  input[type=range] {
+    width: 100%; -webkit-appearance: none; height: 4px;
+    background: rgba(0,212,170,0.2); border-radius: 100px; outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px;
+    background: var(--teal); border-radius: 50%; cursor: pointer;
+    box-shadow: 0 0 10px rgba(0,212,170,0.5);
+  }
+  .calc-result {
+    background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.2);
+    border-radius: 10px; padding: 0.8rem 1rem; margin-top: 1rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .calc-result-label { font-size: 0.8rem; color: var(--text2); }
+  .calc-result-val { font-family: 'Space Grotesk', sans-serif; font-weight: 800; color: var(--teal); font-size: 1.2rem; }
+
+  /* AI scan animation */
+  .ai-scan {
+    background: rgba(0,0,0,0.3); border-radius: 12px;
+    padding: 1rem; position: relative; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .scan-line {
+    position: absolute; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--teal), transparent);
+    animation: scandown 2.5s linear infinite;
+  }
+  @keyframes scandown { 0%{top:0}100%{top:100%} }
+  .scan-text { font-size: 0.75rem; color: var(--text2); font-family: monospace; line-height: 1.8; }
+  .scan-text span { color: var(--teal); }
+
+  /* Scenario compare */
+  .scenario-row { display: flex; gap: 1rem; margin-top: 1rem; }
+  .scenario-item {
+    flex: 1; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 1rem;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .scenario-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+  .scenario-label.avalanche { color: #7c3aed; }
+  .scenario-label.snowball { color: var(--gold); }
+  .scenario-months { font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; font-weight: 800; }
+  .scenario-save { font-size: 0.75rem; color: var(--text2); margin-top: 0.2rem; }
+  .scenario-save strong { color: var(--teal); }
+  .timeline-bar { height: 8px; background: rgba(255,255,255,0.06); border-radius: 100px; margin-top: 0.7rem; overflow: hidden; }
+  .timeline-fill { height: 100%; border-radius: 100px; animation: fillbar 2s ease forwards; }
+  .fill-av { background: #7c3aed; width: 65%; }
+  .fill-sn { background: var(--gold); width: 80%; }
+
+  /* SOCIAL PROOF */
+  .social-proof { background: var(--bg2); }
+  .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; margin-bottom: 4rem; }
+  .stat-card {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.8rem; text-align: center;
+    transition: all 0.3s;
+  }
+  .stat-card:hover { border-color: rgba(0,212,170,0.4); transform: translateY(-4px); }
+  .stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.4rem; font-weight: 800;
+    background: linear-gradient(135deg, var(--teal), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    display: block; margin-bottom: 0.3rem;
+  }
+  .stat-label { color: var(--text2); font-size: 0.85rem; }
+  .testimonials { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+  .testi-card {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem;
+    transition: all 0.3s;
+  }
+  .testi-card:hover { border-color: rgba(0,212,170,0.3); }
+  .testi-stars { color: var(--gold); margin-bottom: 0.8rem; font-size: 0.9rem; }
+  .testi-text { color: var(--text2); font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.2rem; font-style: italic; }
+  .testi-author { display: flex; align-items: center; gap: 0.8rem; }
+  .testi-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--teal), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem; color: white; flex-shrink: 0;
+  }
+  .testi-name { font-weight: 600; font-size: 0.9rem; }
+  .testi-role { color: var(--text2); font-size: 0.78rem; }
+
+  /* TEMPLATES */
+  .templates { background: var(--bg); }
+  .template-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; margin-top: 3rem; }
+  .template-card {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem;
+    transition: all 0.35s; cursor: pointer; position: relative;
+    overflow: hidden;
+  }
+  .template-card::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--card-accent);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .template-card:hover::after { transform: scaleX(1); }
+  .template-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-4px); }
+  .template-card.c1 { --card-accent: linear-gradient(90deg,#ff4757,#ff6b81); }
+  .template-card.c2 { --card-accent: linear-gradient(90deg,#00d4aa,#00b894); }
+  .template-card.c3 { --card-accent: linear-gradient(90deg,#7c3aed,#a855f7); }
+  .template-card.c4 { --card-accent: linear-gradient(90deg,#f59e0b,#fbbf24); }
+  .template-card.c5 { --card-accent: linear-gradient(90deg,#3b82f6,#60a5fa); }
+  .template-card.c6 { --card-accent: linear-gradient(90deg,#ec4899,#f472b6); }
+  .template-icon { font-size: 2rem; margin-bottom: 0.8rem; }
+  .template-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; margin-bottom: 0.4rem; }
+  .template-desc { color: var(--text2); font-size: 0.85rem; line-height: 1.6; margin-bottom: 1rem; }
+  .template-sheets { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .template-sheet {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    padding: 0.2rem 0.6rem; border-radius: 100px; font-size: 0.7rem; color: var(--text2);
+  }
+  .template-dl {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    margin-top: 1.2rem; color: var(--teal); font-size: 0.85rem; font-weight: 600;
+  }
+
+  /* PRICING */
+  .pricing { background: var(--bg2); }
+  .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+  .pricing-card {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 20px; padding: 2rem; position: relative;
+  }
+  .pricing-card.featured {
+    border-color: var(--teal);
+    box-shadow: 0 0 40px rgba(0,212,170,0.15);
+  }
+  .pricing-badge {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--teal), var(--teal2));
+    color: var(--bg); padding: 0.2rem 1rem; border-radius: 100px;
+    font-size: 0.75rem; font-weight: 700; white-space: nowrap;
+  }
+  .pricing-plan { color: var(--text2); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+  .pricing-price { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 800; margin-bottom: 0.3rem; }
+  .pricing-price sub { font-size: 1rem; font-weight: 400; color: var(--text2); }
+  .pricing-sub { color: var(--text2); font-size: 0.85rem; margin-bottom: 1.5rem; }
+  .pricing-features { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.5rem; }
+  .pf-item { display: flex; gap: 0.6rem; font-size: 0.9rem; align-items: flex-start; }
+  .pf-item.yes::before { content: '✓'; color: var(--teal); font-weight: 700; flex-shrink: 0; }
+  .pf-item.no { color: var(--text2); }
+  .pf-item.no::before { content: '–'; color: rgba(255,255,255,0.2); flex-shrink: 0; }
+  .pricing-btn {
+    width: 100%; padding: 0.9rem; border-radius: 12px;
+    font-weight: 700; font-size: 1rem; cursor: pointer;
+    text-align: center; text-decoration: none; display: block;
+    transition: all 0.3s;
+  }
+  .pricing-btn.outline {
+    background: transparent; color: var(--text);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .pricing-btn.outline:hover { border-color: var(--teal); color: var(--teal); }
+  .pricing-btn.solid {
+    background: linear-gradient(135deg, var(--teal), var(--teal2));
+    color: var(--bg); border: none;
+    box-shadow: 0 0 30px rgba(0,212,170,0.3);
+  }
+  .pricing-btn.solid:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(0,212,170,0.5); }
+
+  /* CTA BANNER */
+  .cta-banner {
+    background: linear-gradient(135deg, rgba(0,212,170,0.12), rgba(124,58,237,0.08));
+    border: 1px solid rgba(0,212,170,0.2);
+    border-radius: 24px; padding: 4rem 3rem; text-align: center;
+    margin-top: 4rem; position: relative; overflow: hidden;
+  }
+  .cta-banner::before {
+    content: ''; position: absolute; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at center, rgba(0,212,170,0.06) 0%, transparent 60%);
+    animation: rotate 20s linear infinite;
+  }
+  @keyframes rotate { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+  .cta-banner h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; position: relative; }
+  .cta-banner p { color: var(--text2); margin-bottom: 2rem; position: relative; font-size: 1.05rem; }
+  .cta-banner .btn-primary { position: relative; font-size: 1.1rem; padding: 1rem 2.5rem; }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg); border-top: 1px solid var(--border);
+    padding: 4rem 2rem 2rem;
+  }
+  .footer-inner { max-width: 1200px; margin: 0 auto; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+  .footer-brand .nav-logo { font-size: 1.6rem; display: inline-block; margin-bottom: 0.8rem; }
+  .footer-desc { color: var(--text2); font-size: 0.88rem; line-height: 1.7; max-width: 260px; }
+  .footer-col h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; margin-bottom: 1rem; font-size: 0.9rem; }
+  .footer-col a { display: block; color: var(--text2); text-decoration: none; font-size: 0.88rem; margin-bottom: 0.6rem; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--teal); }
+  .footer-bottom { border-top: 1px solid var(--border); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+  .footer-copy { color: var(--text2); font-size: 0.83rem; }
+
+  /* SCROLL REVEAL */
+  .reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  /* MOBILE */
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .hero-visual { display: none; }
+    .problem-grid { grid-template-columns: 1fr; }
+    .bento-1,.bento-2,.bento-3,.bento-4,.bento-5 { grid-column: span 12; }
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .testimonials { grid-template-columns: 1fr; }
+    .template-grid { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .hero-stats { flex-wrap: wrap; gap: 1rem; }
+  }
+  @media (max-width: 480px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .cta-banner { padding: 2.5rem 1.5rem; }
+    .cta-banner h2 { font-size: 1.8rem; }
+    section { padding: 4rem 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">tomonee</div>
+  <div class="nav-links">
+    <a href="#features">Fitur</a>
+    <a href="#templates">Template</a>
+    <a href="#pricing">Harga</a>
+    <a href="#member.tomonee.com" class="nav-cta">Mulai Gratis →</a>
+  </div>
+  <div class="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-inner container">
+    <div class="hero-content">
+      <div class="hero-badge">🚀 Manajemen Keuangan Cerdas</div>
+      <h1 class="hero-title">
+        Yang capek itu<br>
+        <span class="accent">kepala</span>.<br>
+        Bukan <span class="gold">dompet</span>.
+      </h1>
+      <p class="hero-sub">
+        Konsolidasikan semua utang, simulasikan strategi pelunasan, dan kelola keuangan dengan satu platform — tanpa pusing, tanpa tebak-tebakan.
+      </p>
+      <div class="hero-actions">
+        <a href="https://member.tomonee.com" class="btn-primary">Coba Gratis Sekarang →</a>
+        <a href="#features" class="btn-secondary">Lihat Fitur ↓</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat">
+          <div class="hstat-num" data-count="8400">0</div>
+          <div class="hstat-label">Pengguna aktif</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-num" data-count="2" data-prefix="Rp " data-suffix="M+">Rp 0M+</div>
+          <div class="hstat-label">Total utang dikelola</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-num" data-count="94" data-suffix="%">0%</div>
+          <div class="hstat-label">Kepuasan pengguna</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="dashboard-card">
+        <div class="dash-header">
+          <span class="dash-title">Total Utang</span>
+          <span class="dash-badge">4 utang aktif</span>
+        </div>
+        <div class="dash-total">Rp <span id="heroCounter">0</span></div>
+        <div class="debt-bars">
+          <div class="debt-bar-item">
+            <div class="debt-bar-label"><span>KPR BCA</span><span>Rp 285jt</span></div>
+            <div class="debt-bar-track"><div class="debt-bar-fill bar-kpr"></div></div>
+          </div>
+          <div class="debt-bar-item">
+            <div class="debt-bar-label"><span>Kartu Kredit</span><span>Rp 12jt</span></div>
+            <div class="debt-bar-track"><div class="debt-bar-fill bar-kk"></div></div>
+          </div>
+          <div class="debt-bar-item">
+            <div class="debt-bar-label"><span>Kredit Motor</span><span>Rp 8.5jt</span></div>
+            <div class="debt-bar-track"><div class="debt-bar-fill bar-motor"></div></div>
+          </div>
+          <div class="debt-bar-item">
+            <div class="debt-bar-label"><span>Pinjol</span><span>Rp 3jt</span></div>
+            <div class="debt-bar-track"><div class="debt-bar-fill bar-pinjol"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="float-card float-card-1">
+        <div class="fc-label">Hemat bunga</div>
+        <div class="fc-val green">+ Rp 4.2jt</div>
+      </div>
+      <div class="float-card float-card-2">
+        <div class="fc-label">Lunas dalam</div>
+        <div class="fc-val">28 bulan</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem" id="problem">
+  <div class="container">
+    <div class="problem-grid">
+      <div>
+        <div class="section-tag">Masalahnya</div>
+        <h2 class="section-title">Kamu tahu ada utang, tapi nggak tahu <em>mana yang harus dibayar duluan</em>.</h2>
+        <p class="section-sub">Bukan kamu yang salah. Sistem keuangan memang bikin bingung. Tapi ada cara lebih tenang untuk menghadapinya.</p>
+        <div class="pain-cards" style="margin-top:2rem">
+          <div class="pain-card reveal">
+            <div class="pain-icon">😵</div>
+            <div>
+              <div class="pain-title">Utang di mana-mana, data berserakan</div>
+              <div class="pain-desc">KPR di sini, kartu kredit di sana, cicilan motor di rekening lain — nggak ada satu tempat yang kasih gambaran utuh.</div>
+            </div>
+          </div>
+          <div class="pain-card reveal reveal-delay-1">
+            <div class="pain-icon">🤔</div>
+            <div>
+              <div class="pain-title">Bayar yang mana duluan?</div>
+              <div class="pain-desc">Bunga tertinggi? Nominal terkecil? Tanpa simulasi, kamu cuma nebak. Dan nebak artinya buang uang.</div>
+            </div>
+          </div>
+          <div class="pain-card reveal reveal-delay-2">
+            <div class="pain-icon">📱</div>
+            <div>
+              <div class="pain-title">Aplikasi bank nggak kasih gambaran lengkap</div>
+              <div class="pain-desc">Masing-masing aplikasi cuma kasih lihat satu utang. Nggak ada yang bantu kamu lihat semuanya sekaligus.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="solution-card">
+          <div class="solution-title">✦ Tomonee ngerjain semuanya buat kamu</div>
+          <div class="solution-items">
+            <div class="solution-item">Konsolidasikan semua utang dalam satu dashboard</div>
+            <div class="solution-item">Simulasikan strategi Avalanche vs Snowball secara otomatis</div>
+            <div class="solution-item">Foto tagihan → data masuk otomatis dengan AI</div>
+            <div class="solution-item">Tahu persis berapa bunga yang bisa kamu hemat</div>
+            <div class="solution-item">Bandingkan skenario refinancing dengan mudah</div>
+            <div class="solution-item">Template keuangan gratis: budget, investasi, kripto</div>
+            <div class="solution-item">Reminder jatuh tempo supaya nggak kena denda</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-tag">Fitur Unggulan</div>
+      <h2 class="section-title">Semua yang kamu butuhkan,<br>dalam satu platform.</h2>
+    </div>
+    <div class="bento-grid">
+      <!-- Card 1: Debt Consolidation -->
+      <div class="bento-card bento-1 reveal">
+        <div class="bento-tag">Konsolidasi Utang</div>
+        <div class="bento-title">Lihat semua utang dalam satu tampilan</div>
+        <div class="bento-desc">Nggak perlu buka 5 aplikasi berbeda. Tomonee konsolidasikan semua kewajiban finansial kamu — dari KPR sampai pinjol — dalam satu dashboard yang jernih.</div>
+        <div class="donut-wrap">
+          <svg class="donut-svg" width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="48" class="donut-circle" stroke="rgba(255,255,255,0.05)" stroke-dasharray="301 0"/>
+            <circle cx="60" cy="60" r="48" class="donut-circle" stroke="#7c3aed" stroke-dasharray="0 301" id="d1" transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="48" class="donut-circle" stroke="#ff4757" stroke-dasharray="0 301" id="d2" transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="48" class="donut-circle" stroke="#f59e0b" stroke-dasharray="0 301" id="d3" transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="48" class="donut-circle" stroke="#00d4aa" stroke-dasharray="0 301" id="d4" transform="rotate(-90 60 60)"/>
+            <text x="60" y="56" text-anchor="middle" fill="#e8f0fe" font-family="Space Grotesk" font-size="11" font-weight="700">Total</text>
+            <text x="60" y="70" text-anchor="middle" fill="#00d4aa" font-family="Space Grotesk" font-size="10" font-weight="800">Rp 308jt</text>
+          </svg>
+          <div class="donut-legends">
+            <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div><span>KPR BCA</span><span class="legend-val" style="margin-left:auto;padding-left:1rem">92%</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ff4757"></div><span>Kartu Kredit</span><span class="legend-val" style="margin-left:auto;padding-left:1rem">4%</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span>Kredit Motor</span><span class="legend-val" style="margin-left:auto;padding-left:1rem">3%</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div><span>Pinjol</span><span class="legend-val" style="margin-left:auto;padding-left:1rem">1%</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- Card 2: Calculator -->
+      <div class="bento-card bento-2 reveal reveal-delay-1">
+        <div class="bento-tag">Kalkulator Pelunasan</div>
+        <div class="bento-title">Simulasikan dampak pembayaran ekstra</div>
+        <div class="calc-row">
+          <div class="calc-label"><span>Cicilan bulanan</span><span class="calc-val" id="calcMonthly">Rp 2.500.000</span></div>
+          <input type="range" min="500000" max="10000000" step="100000" value="2500000" id="sliderMonthly" oninput="updateCalc()">
+        </div>
+        <div class="calc-row">
+          <div class="calc-label"><span>Bayar ekstra/bln</span><span class="calc-val" id="calcExtra">Rp 500.000</span></div>
+          <input type="range" min="0" max="5000000" step="100000" value="500000" id="sliderExtra" oninput="updateCalc()">
+        </div>
+        <div class="calc-result">
+          <div><div class="calc-result-label">Hemat bunga</div><div class="calc-result-val" id="calcSave">Rp 3.2jt</div></div>
+          <div><div class="calc-result-label">Lebih cepat</div><div class="calc-result-val" id="calcMonths">8 bln</div></div>
+        </div>
+      </div>
+      <!-- Card 3: AI Scan -->
+      <div class="bento-card bento-3 reveal">
+        <div class="bento-tag">AI Photo Scan</div>
+        <div class="bento-title">Foto tagihan → data otomatis</div>
+        <div class="bento-desc">Foto struk atau tagihan, AI langsung ekstrak nominalnya.</div>
+        <div class="ai-scan">
+          <div class="scan-line"></div>
+          <div class="scan-text" id="scanText">
+            Scanning tagihan...<br>
+            <span>✓ Nominal: Rp 1.250.000</span><br>
+            <span>✓ Jatuh tempo: 15 Apr 2026</span><br>
+            <span>✓ Jenis: Kartu Kredit BCA</span>
+          </div>
+        </div>
+      </div>
+      <!-- Card 4: Scenario Compare -->
+      <div class="bento-card bento-4 reveal reveal-delay-1">
+        <div class="bento-tag">Perbandingan Skenario</div>
+        <div class="bento-title">Avalanche vs Snowball — mana yang lebih hemat?</div>
+        <div class="bento-desc">Tomonee hitung otomatis dua strategi pelunasan populer dan tunjukkan mana yang paling efisien untuk situasi kamu.</div>
+        <div class="scenario-row">
+          <div class="scenario-item">
+            <div class="scenario-label avalanche">⚡ Avalanche</div>
+            <div class="scenario-months">26 bln</div>
+            <div class="scenario-save">Hemat bunga <strong>Rp 4.1jt</strong></div>
+            <div class="timeline-bar"><div class="timeline-fill fill-av"></div></div>
+          </div>
+          <div class="scenario-item">
+            <div class="scenario-label snowball">☃️ Snowball</div>
+            <div class="scenario-months">31 bln</div>
+            <div class="scenario-save">Hemat bunga <strong>Rp 2.8jt</strong></div>
+            <div class="timeline-bar"><div class="timeline-fill fill-sn"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section class="social-proof" id="testimonials">
+  <div class="container">
+    <div class="text-center" style="margin-bottom:3rem">
+      <div class="section-tag">Sudah Terbukti</div>
+      <h2 class="section-title">Lebih dari <span style="color:var(--teal)">8.000 pengguna</span><br>sudah lebih tenang</h2>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card reveal">
+        <span class="stat-num" data-count="8400" data-suffix="+">0+</span>
+        <div class="stat-label">Pengguna Aktif</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-1">
+        <span class="stat-num" data-count="2400" data-prefix="Rp " data-suffix="M">Rp 0M</span>
+        <div class="stat-label">Total utang terkelola</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-2">
+        <span class="stat-num" data-count="94" data-suffix="%">0%</span>
+        <div class="stat-label">Kepuasan pengguna</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-3">
+        <span class="stat-num" data-count="32000" data-suffix="+">0+</span>
+        <div class="stat-label">Template diunduh</div>
+      </div>
+    </div>
+    <div class="testimonials">
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Akhirnya ngerti kenapa cicilan kartu kredit gue kayak nggak habis-habis. Ternyata gue selama ini bayar yang salah duluan. Setelah pakai Tomonee, 8 bulan lagi lunas!"</p>
+        <div class="testi-author">
+          <div class="testi-avatar">RD</div>
+          <div><div class="testi-name">Rizky D.</div><div class="testi-role">Karyawan swasta, Jakarta</div></div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-delay-1">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Fitur foto tagihan-nya gila banget. Biasanya gue input manual satu-satu, sekarang tinggal foto dan data langsung masuk. Hemat waktu banget."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#f59e0b,#ff4757)">SA</div>
+          <div><div class="testi-name">Sari A.</div><div class="testi-role">Freelancer, Surabaya</div></div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-delay-2">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Template Excel-nya gratis dan lengkap banget. Dari budgeting sampai tracking kripto, semua ada. Gue pakai semuanya dan langsung rapi keuangannya."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#7c3aed,#00d4aa)">BW</div>
+          <div><div class="testi-name">Bagas W.</div><div class="testi-role">Wirausaha, Bandung</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEMPLATES -->
+<section class="templates" id="templates">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-tag">Template Gratis</div>
+      <h2 class="section-title">6 template keuangan premium,<br><span style="color:var(--teal)">gratis untuk member</span></h2>
+      <p class="section-sub" style="margin:0 auto 0">Dibuat oleh ahli keuangan, dirancang untuk pengguna Indonesia. Download, isi, langsung pakai.</p>
+    </div>
+    <div class="template-grid" style="margin-top:3rem">
+      <div class="template-card c1 reveal">
+        <div class="template-icon">💳</div>
+        <div class="template-name">Manajemen Utang</div>
+        <div class="template-desc">Konsolidasikan semua utang, bandingkan Avalanche vs Snowball, proyeksikan pelunasan.</div>
+        <div class="template-sheets">
+          <span class="template-sheet">Dashboard</span>
+          <span class="template-sheet">Daftar Utang</span>
+          <span class="template-sheet">Simulasi</span>
+        </div>
+        <div class="template-dl">↓ Unduh Template</div>
+      </div>
+      <div class="template-card c2 reveal reveal-delay-1">
+        <div class="template-icon">📊</div>
+        <div class="template-name">Anggaran Bulanan</div>
+        <div class="template-desc">Budget vs aktual, tracking harian, savings rate otomatis terhitung.</div>
+        <div class="template-sheets">
+          <span class="template-sheet">Dashboard</span>
+          <span class="template-sheet">Pemasukan</span>
+          <span class="template-sheet">Pengeluaran</span>
+          <span class="template-sheet">Harian</span>
+        </div>
+        <div class="template-dl">↓ Unduh Template</div>
+      </div>
+      <div class="template-card c3 reveal reveal-delay-2">
+        <div class="template-icon">📈</div>
+        <div class="template-name">Tracker Investasi</div>
+        <div class="template-desc">Portfolio summary, proyeksi compound interest, IRR calculation.</div>
+        <div class="template-sheets">
+          <span class="template-sheet">Portfolio</span>
+          <span class="template-sheet">Investasi</span>
+          <span class="template-sheet">Proyeksi</span>
+        </div>
+        <div class="template-dl">↓ Unduh Template</div>
+      </div>
+      <div class="template-card c4 reveal">
+        <div class="template-icon">📉</div>
+        <div class="template-name">Portofolio Saham</div>
+        <div class="template-desc">Lacak holdings, dividen, watchlist, dan alokasi sektor saham IDX/global.</div>
+        <div class="template-sheets">
+          <span class="template-sheet">Summary</span>
+          <span class="template-sheet">Holdings</span>
+          <span class="template-sheet">Dividen</span>
+          <span class="template-sheet">Watchlist</span>
+        </div>
+        <div class="template-dl">↓ Unduh Template</div>
+      </div>
+      <div class="template-card c5 reveal reveal-delay-1">
+        <div class="template-icon">₿</div>
+        <div class="template-name">Crypto Tracker</div>
+        <div class="template-desc">Portfolio kripto real-time, DCA calculator, dan helper pajak capital gains.</div>
+        <div class="template-sheets">
+          <span class="template-sheet">Dashboard</span>
+          <span class="template-sheet">Holdings</span>
+          <span class="template-sheet">DCA Calc</span>
+          <span class="template-sheet">Pajak</span>
+        </div>
+        <div class="template-dl">↓ Unduh Template</div>
+      </div>
+      <div class="template-card c6 reveal reveal-delay-2">
+        <div class="template-icon">🏦</div>
+        <div class="template-name">Dana Darurat & Tabungan</div>
+        <div class="template-desc">Target 6x pengeluaran, proyeksi bunga, dan tracking semua tujuan tabungan.</div>
+        <div class="template-sheets">
+          <span class="template-sheet">Dana Darurat</span>
+          <span class="template-sheet">Target</span>
+          <span class="template-sheet">Proyeksi</span>
+        </div>
+        <div class="template-dl">↓ Unduh Template</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-tag">Harga</div>
+      <h2 class="section-title">Mulai gratis.<br>Upgrade kalau mau lebih.</h2>
+      <p class="section-sub" style="margin:0 auto 1rem">Nggak ada kartu kredit yang diperlukan untuk memulai.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-plan">Gratis</div>
+        <div class="pricing-price">Rp 0<sub>/bulan</sub></div>
+        <div class="pricing-sub">Selamanya gratis, bukan trial.</div>
+        <div class="pricing-features">
+          <div class="pf-item yes">Dashboard utang (maks 5 utang)</div>
+          <div class="pf-item yes">Semua 6 template Excel</div>
+          <div class="pf-item yes">Kalkulator pelunasan dasar</div>
+          <div class="pf-item yes">Reminder jatuh tempo</div>
+          <div class="pf-item no">AI photo scan (maks 3/bln)</div>
+          <div class="pf-item no">Perbandingan skenario unlimited</div>
+          <div class="pf-item no">Export ke PDF</div>
+        </div>
+        <a href="https://member.tomonee.com" class="pricing-btn outline">Daftar Gratis →</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-badge">Paling Populer</div>
+        <div class="pricing-plan">Premium</div>
+        <div class="pricing-price">Rp 49rb<sub>/bulan</sub></div>
+        <div class="pricing-sub">Bayar tahunan, hemat 40%.</div>
+        <div class="pricing-features">
+          <div class="pf-item yes">Utang tidak terbatas</div>
+          <div class="pf-item yes">Semua 6 template Excel</div>
+          <div class="pf-item yes">Kalkulator pelunasan advanced</div>
+          <div class="pf-item yes">Reminder jatuh tempo</div>
+          <div class="pf-item yes">AI photo scan unlimited</div>
+          <div class="pf-item yes">Perbandingan skenario unlimited</div>
+          <div class="pf-item yes">Export ke PDF & Excel</div>
+        </div>
+        <a href="https://member.tomonee.com" class="pricing-btn solid">Mulai Premium →</a>
+      </div>
+    </div>
+    <div class="cta-banner reveal">
+      <h2>Keputusan bayar tanpa data adalah tebakan. <span style="color:var(--teal)">Mulai dari data.</span></h2>
+      <p>Bergabung dengan 8.000+ pengguna yang sudah tenang soal utangnya.</p>
+      <a href="https://member.tomonee.com" class="btn-primary">Coba Gratis — Nggak Perlu Kartu Kredit →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo">tomonee</div>
+        <p class="footer-desc">Platform manajemen keuangan untuk Indonesia. Dari utang yang bikin pusing, sampai investasi yang tenang.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Produk</h4>
+        <a href="#features">Fitur</a>
+        <a href="#templates">Template</a>
+        <a href="#pricing">Harga</a>
+        <a href="https://member.tomonee.com">Login</a>
+      </div>
+      <div class="footer-col">
+        <h4>Template</h4>
+        <a href="#">Manajemen Utang</a>
+        <a href="#">Budget Bulanan</a>
+        <a href="#">Tracker Saham</a>
+        <a href="#">Crypto Tracker</a>
+      </div>
+      <div class="footer-col">
+        <h4>Kontak</h4>
+        <a href="#">Instagram</a>
+        <a href="#">Twitter/X</a>
+        <a href="#">Email</a>
+        <a href="#">FAQ</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Tomonee. Dibuat dengan ❤️ untuk Indonesia.</div>
+      <div class="footer-copy"><a href="#" style="color:var(--text2);text-decoration:none;margin-right:1.5rem">Privasi</a><a href="#" style="color:var(--text2);text-decoration:none">Syarat</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Hero counter animation
+function animateCounter(el, target, prefix, suffix, duration) {
+  let start = 0;
+  const step = target / (duration / 16);
+  const timer = setInterval(() => {
+    start += step;
+    if (start >= target) { start = target; clearInterval(timer); }
+    const val = Math.floor(start);
+    const formatted = val >= 1000 ? val.toLocaleString('id-ID') : val;
+    el.textContent = (prefix || '') + formatted + (suffix || '');
+  }, 16);
+}
+
+// Hero debt counter
+let heroVal = 0;
+const heroTarget = 308500000;
+const heroEl = document.getElementById('heroCounter');
+setTimeout(() => {
+  const timer = setInterval(() => {
+    heroVal += 4200000;
+    if (heroVal >= heroTarget) { heroVal = heroTarget; clearInterval(timer); }
+    heroEl.textContent = (heroVal/1000000).toFixed(1) + ' jt';
+  }, 30);
+}, 500);
+
+// Donut animation
+setTimeout(() => {
+  const total = 301;
+  const segments = [
+    { id: 'd1', pct: 0.92, offset: 0 },
+    { id: 'd2', pct: 0.04, offset: 0.92 * total },
+    { id: 'd3', pct: 0.03, offset: 0.96 * total },
+    { id: 'd4', pct: 0.01, offset: 0.99 * total },
+  ];
+  segments.forEach(s => {
+    const el = document.getElementById(s.id);
+    if (!el) return;
+    const len = s.pct * total;
+    el.style.strokeDasharray = `0 ${total}`;
+    el.style.strokeDashoffset = -s.offset;
+    el.style.transformOrigin = '60px 60px';
+    el.style.transform = `rotate(-90deg)`;
+    setTimeout(() => { el.style.strokeDasharray = `${len} ${total - len}`; }, 100);
+  });
+}, 400);
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Counter animation on scroll
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting || e.target.dataset.animated) return;
+    e.target.dataset.animated = '1';
+    const target = parseInt(e.target.dataset.count);
+    const prefix = e.target.dataset.prefix || '';
+    const suffix = e.target.dataset.suffix || '';
+    animateCounter(e.target, target, prefix, suffix, 2000);
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
+
+// Calculator
+function fmt(n) {
+  if (n >= 1000000) return 'Rp ' + (n/1000000).toFixed(1) + 'jt';
+  return 'Rp ' + (n/1000).toFixed(0) + 'rb';
+}
+function updateCalc() {
+  const monthly = parseInt(document.getElementById('sliderMonthly').value);
+  const extra = parseInt(document.getElementById('sliderExtra').value);
+  document.getElementById('calcMonthly').textContent = fmt(monthly);
+  document.getElementById('calcExtra').textContent = fmt(extra);
+  const ratio = extra / monthly;
+  const saved = Math.round(extra * 6.4 / 1000) * 1000;
+  const months = Math.max(1, Math.round(ratio * 16));
+  document.getElementById('calcSave').textContent = fmt(saved);
+  document.getElementById('calcMonths').textContent = months + ' bln';
+}
+
+// Navbar scroll
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('navbar');
+  if (window.scrollY > 50) nav.style.background = 'rgba(7,13,26,0.95)';
+  else nav.style.background = 'rgba(7,13,26,0.85)';
+});
+
+// Hamburger
+function toggleMenu() {
+  const links = document.querySelector('.nav-links');
+  links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
+  links.style.flexDirection = 'column';
+  links.style.position = 'absolute';
+  links.style.top = '70px';
+  links.style.left = '0';
+  links.style.right = '0';
+  links.style.background = 'rgba(7,13,26,0.98)';
+  links.style.padding = '1rem 2rem';
+  links.style.gap = '1rem';
+  links.style.borderBottom = '1px solid rgba(0,212,170,0.15)';
+}
+</script>
+</body>
+</html>
