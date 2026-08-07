@@ -4,8 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weed Labs — One-man lab shipping AI products</title>
-    <meta name="description" content="One-man lab shipping AI products. Built from Indonesia.">
-    <meta name="theme-color" content="#d5f0ea">
+    <meta name="description" content="One-man lab shipping AI products from Indonesia. Qlipper, Pidgo, Vicca and a stack of free tools, all self-hosted on one VPS.">
+    <meta name="theme-color" content="#d5f0ea" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0a1714" media="(prefers-color-scheme: dark)">
+    <link rel="canonical" href="https://weedlabs.online/">
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://weedlabs.online/">
+    <meta property="og:site_name" content="Weed Labs">
+    <meta property="og:title" content="Weed Labs — One-man lab shipping AI products">
+    <meta property="og:description" content="Six products live, 959 paying Qlipper customers, ~30 services on one VPS. Built and run by one person from Indonesia.">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Weed Labs — One-man lab shipping AI products">
+    <meta name="twitter:description" content="Six products live, 959 paying Qlipper customers, ~30 services on one VPS. Built and run by one person from Indonesia.">
+
+    <!-- Self-contained favicon: stacked wordmark mark -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d9373'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' font-size='38' font-weight='800' fill='%2300c896'%3EL%3C/text%3E%3C/svg%3E">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -22,14 +39,36 @@
             --card-bg: #ffffff;
             --card-border: #b8ddd3;
             --card-shadow: rgba(0, 100, 80, 0.06);
+            --card-shadow-hover: rgba(0, 100, 80, 0.10);
             --teal: #0d9373;
             --teal-dark: #07705a;
             --teal-accent: #00c896;
             --text: #1a3a32;
             --text-muted: #4d7a6e;
             --text-dim: #7a9e94;
+            --glow: rgba(0, 200, 150, 0.12);
+            --grain-opacity: 0.035;
             --font-sans: 'Plus Jakarta Sans', sans-serif;
             --font-mono: 'DM Mono', monospace;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0a1714;
+                --bg-warm: #0d1f1a;
+                --card-bg: #102520;
+                --card-border: #1e463a;
+                --card-shadow: rgba(0, 0, 0, 0.32);
+                --card-shadow-hover: rgba(0, 0, 0, 0.45);
+                --teal: #2fbb94;
+                --teal-dark: #86e7c7;
+                --teal-accent: #00c896;
+                --text: #dff3ec;
+                --text-muted: #93bfb2;
+                --text-dim: #63897e;
+                --glow: rgba(0, 200, 150, 0.10);
+                --grain-opacity: 0.05;
+            }
         }
 
         body {
@@ -47,23 +86,25 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            opacity: 0.035;
+            opacity: var(--grain-opacity);
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
             pointer-events: none;
             z-index: 0;
         }
 
         .container {
-            max-width: 640px;
+            max-width: 760px;
             margin: 0 auto;
             padding: 0 24px;
             position: relative;
             z-index: 1;
         }
 
-        /* Hero */
+        a { color: inherit; }
+
+        /* ---------- Hero ---------- */
         .hero {
-            padding: 80px 0 24px;
+            padding: 80px 0 8px;
             text-align: center;
         }
 
@@ -74,7 +115,7 @@
             transform: translateX(-50%);
             width: 480px;
             height: 320px;
-            background: radial-gradient(ellipse, rgba(0, 200, 150, 0.12) 0%, transparent 70%);
+            background: radial-gradient(ellipse, var(--glow) 0%, transparent 70%);
             pointer-events: none;
         }
 
@@ -116,156 +157,371 @@
             font-family: var(--font-mono);
             font-size: 14px;
             color: var(--text-muted);
-            margin-bottom: 48px;
+            margin-bottom: 32px;
         }
 
-        /* Author */
+        /* ---------- Proof strip ---------- */
+        .proof {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .proof-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 18px 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px var(--card-shadow);
+        }
+
+        .proof-num {
+            font-size: clamp(26px, 6vw, 34px);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--teal);
+            line-height: 1.1;
+        }
+
+        .proof-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.35;
+            margin-top: 4px;
+        }
+
+        /* ---------- Author ---------- */
         .author {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 12px;
+            justify-content: center;
+            gap: 14px;
             margin-bottom: 64px;
         }
 
         .author-avatar {
-            width: 96px;
-            height: 96px;
+            position: relative;
+            width: 56px;
+            height: 56px;
+            flex: 0 0 56px;
             border-radius: 50%;
-            background: var(--card-bg);
+            background: var(--bg-warm);
             border: 2px solid var(--card-border);
             overflow: hidden;
             box-shadow: 0 2px 8px var(--card-shadow);
         }
 
-        .author-label {
-            font-family: var(--font-mono);
-            font-size: 13px;
-            color: var(--text-muted);
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 6px;
-            padding: 4px 12px;
-            box-shadow: 0 1px 4px var(--card-shadow);
-        }
-
-        .author-label a {
-            color: var(--text-muted);
-            text-decoration: none;
-        }
-
-        .author-label a:hover {
-            color: var(--teal);
-        }
-
-        /* Section heading */
-        .section-title {
-            font-size: 32px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 48px;
-            color: var(--teal-dark);
-        }
-
-        .section-label {
-            font-family: var(--font-mono);
-            font-size: 13px;
-            color: var(--text-dim);
-            margin-bottom: 20px;
-        }
-
-        /* Product grid */
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 48px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 28px 20px;
-            text-align: center;
-            text-decoration: none;
-            color: inherit;
-            transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
-            display: block;
-            box-shadow: 0 2px 8px var(--card-shadow);
-        }
-
-        a.card:hover {
-            border-color: var(--teal-accent);
-            box-shadow: 0 4px 16px rgba(0, 100, 80, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .card-coming-soon {
-            opacity: 0.5;
-        }
-
-        .card-icon {
-            width: 96px;
-            height: 96px;
-            border-radius: 20px;
+        /* Monogram sits underneath; the photo covers it once it exists. */
+        .author-monogram {
+            position: absolute;
+            inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: var(--font-mono);
-            font-size: 28px;
+            font-size: 18px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            color: var(--teal);
+        }
+
+        .author-avatar img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .author-text {
+            text-align: left;
+        }
+
+        .author-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .author-role {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .author-role a { color: var(--text-muted); text-decoration: none; }
+        .author-role a:hover { color: var(--teal); }
+
+        /* ---------- Section headings ---------- */
+        .section {
+            margin-bottom: 56px;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--teal-dark);
+        }
+
+        .section-note {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        /* ---------- Cards ---------- */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            box-shadow: 0 2px 8px var(--card-shadow);
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+        }
+
+        a.card:hover, a.card:focus-visible {
+            border-color: var(--teal-accent);
+            box-shadow: 0 4px 16px var(--card-shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Lead card — Qlipper */
+        .card-lead {
+            display: grid;
+            grid-template-columns: 76px 1fr;
+            gap: 20px;
+            align-items: start;
+            padding: 26px 24px;
+            margin-bottom: 16px;
+        }
+
+        .card-lead .card-icon { margin: 0; }
+
+        .card-icon {
+            width: 76px;
+            height: 76px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 24px;
             font-weight: 500;
             color: #fff;
             margin: 0 auto 14px;
+            overflow: hidden;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
         }
 
         .card-icon img {
             width: 100%;
             height: 100%;
-            border-radius: 20px;
+            border-radius: 18px;
             object-fit: cover;
         }
 
         .card-name {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: var(--text);
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
         }
 
+        .card-lead .card-name { font-size: 20px; }
+
         .card-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-top: 2px;
+        }
+
+        .card-metric {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-top: 12px;
+            font-family: var(--font-mono);
             font-size: 12px;
             color: var(--text-muted);
-            line-height: 1.4;
+            background: var(--bg-warm);
+            border: 1px solid var(--card-border);
+            border-radius: 100px;
+            padding: 4px 12px;
+        }
+
+        .card-metric b {
+            font-family: var(--font-sans);
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--teal);
         }
 
         .card-badge {
             display: inline-block;
             font-family: var(--font-mono);
-            font-size: 10px;
-            color: var(--teal);
-            background: var(--bg);
-            border: 1px solid var(--card-border);
-            border-radius: 100px;
-            padding: 2px 8px;
-            margin-top: 8px;
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 10px;
         }
 
-        /* Footer */
+        /* Pair grid — Pidgo + Vicca */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .grid-2 .card {
+            padding: 24px 20px;
+        }
+
+        .grid-2 .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            font-size: 20px;
+            margin: 0 0 14px;
+        }
+
+        .grid-2 .card-icon img { border-radius: 14px; }
+
+        /* ---------- Compact list ---------- */
+        .list {
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            background: var(--card-bg);
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--card-shadow);
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            text-decoration: none;
+            color: inherit;
+            border-top: 1px solid var(--card-border);
+            transition: background-color 0.15s;
+        }
+
+        .row:first-child { border-top: none; }
+        .row:hover, .row:focus-visible { background: var(--bg-warm); }
+
+        .row-dot {
+            width: 28px;
+            height: 28px;
+            flex: 0 0 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .row-body { display: block; min-width: 0; flex: 1; }
+
+        .row-name {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .row-desc {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .row-meta {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+
+        .lock {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-muted);
+            background: var(--bg-warm);
+            border: 1px solid var(--card-border);
+            border-radius: 100px;
+            padding: 3px 9px 3px 7px;
+            white-space: nowrap;
+        }
+
+        .lock svg { width: 10px; height: 10px; flex: 0 0 10px; }
+
+        /* ---------- How ---------- */
+        .how {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 26px 24px;
+            box-shadow: 0 2px 8px var(--card-shadow);
+        }
+
+        .how p {
+            font-size: 14px;
+            color: var(--text-muted);
+            max-width: 56ch;
+        }
+
+        .how ul {
+            list-style: none;
+            margin-top: 18px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .how li {
+            display: flex;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .how li::before {
+            content: '—';
+            color: var(--teal-accent);
+            flex: 0 0 auto;
+        }
+
+        /* ---------- Footer ---------- */
         footer {
             border-top: 1px solid var(--card-border);
-            padding: 32px 0;
-            margin-top: 16px;
+            padding: 32px 0 48px;
             text-align: center;
         }
 
         .footer-links {
             display: flex;
             justify-content: center;
-            gap: 24px;
+            gap: 20px;
             flex-wrap: wrap;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .footer-links a {
@@ -275,8 +531,13 @@
             text-decoration: none;
         }
 
-        .footer-links a:hover {
-            color: var(--teal);
+        .footer-links a:hover { color: var(--teal); }
+
+        .footer-next {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 10px;
         }
 
         .footer-copy {
@@ -285,18 +546,30 @@
             color: var(--text-dim);
         }
 
-        /* Responsive */
+        /* ---------- Responsive ---------- */
         @media (max-width: 640px) {
             .logo-line-1 { padding-left: 5%; }
             .logo-line-3 { padding-right: 5%; }
-            .section-title { font-size: 24px; }
-            .product-grid { grid-template-columns: repeat(2, 1fr); }
-            .hero { padding: 48px 0 16px; }
+            .hero { padding: 48px 0 8px; }
+            .section-title { font-size: 20px; }
+            .section { margin-bottom: 44px; }
             .author { margin-bottom: 48px; }
+            .proof { gap: 8px; }
+            .proof-item { padding: 14px 8px; }
+            .proof-label { font-size: 10px; }
+            .card-lead { grid-template-columns: 60px 1fr; gap: 16px; padding: 22px 18px; }
+            .card-lead .card-icon { width: 60px; height: 60px; border-radius: 14px; }
+            .card-lead .card-icon img { border-radius: 14px; }
+            .row-meta { display: none; }
         }
 
         @media (max-width: 400px) {
-            .product-grid { grid-template-columns: 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            a.card:hover, a.card:focus-visible { transform: none; }
+            .card, .row { transition: none; }
         }
     </style>
 </head>
@@ -305,133 +578,221 @@
 
         <!-- Hero -->
         <section class="hero">
-            <div class="logo">
+            <h1 class="logo">
                 <span class="logo-line-1">weed</span>
                 <span class="logo-line-2">Labs</span>
                 <span class="logo-line-3">.online</span>
-            </div>
+            </h1>
             <p class="tagline">One-man lab shipping AI products. Built from Indonesia.</p>
         </section>
+
+        <div class="proof">
+            <div class="proof-item">
+                <div class="proof-num">6</div>
+                <div class="proof-label">products live</div>
+            </div>
+            <div class="proof-item">
+                <div class="proof-num">959</div>
+                <div class="proof-label">paying Qlipper<br>customers</div>
+            </div>
+            <div class="proof-item">
+                <div class="proof-num">~30</div>
+                <div class="proof-label">services on<br>one VPS</div>
+            </div>
+        </div>
 
         <!-- Author -->
         <div class="author">
             <div class="author-avatar">
-                <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
-                    <circle cx="40" cy="30" r="14" fill="var(--teal)" opacity="0.7"/>
-                    <ellipse cx="40" cy="68" rx="22" ry="18" fill="var(--teal)" opacity="0.5"/>
-                </svg>
+                <span class="author-monogram" aria-hidden="true">SW</span>
+                <!-- Drop a real photo at /assets/avatar.jpg; until then the img fails and is removed,
+                     leaving the monogram. -->
+                <img src="/assets/avatar.jpg" alt="" onerror="this.remove()">
             </div>
-            <div class="author-label"><a href="https://instagram.com/buildwithdeee" target="_blank" rel="noopener">PM by day, builder at night</a></div>
+            <div class="author-text">
+                <div class="author-name">Ikhsan Widiadyatma</div>
+                <div class="author-role">PM by day, builder at night ·
+                    <a href="https://instagram.com/buildwithdeee" target="_blank" rel="noopener">@buildwithdeee</a>
+                </div>
+            </div>
         </div>
 
         <!-- Products -->
-        <h2 class="section-title">Products</h2>
+        <section class="section">
+            <div class="section-head">
+                <h2 class="section-title">Products</h2>
+                <span class="section-note">paid, in production</span>
+            </div>
 
-        <div class="section-label">Live</div>
-        <div class="product-grid">
-            <a href="https://pidgoapp.online" target="_blank" rel="noopener" class="card">
-                <div class="card-icon" style="background: #0a0a0f;">
-                    <img src="https://pidgoapp.online/assets/favicon.png" alt="Pidgoapp">
-                </div>
-                <div class="card-name">Pidgoapp</div>
-                <div class="card-desc">AI landing page generator<br>with tracking pixel baked-in</div>
-                <div class="card-badge">pidgoapp.online</div>
-            </a>
-            <a href="https://qlipper.id" target="_blank" rel="noopener" class="card">
+            <a href="https://qlipper.id" target="_blank" rel="noopener" class="card card-lead">
                 <div class="card-icon" style="background: #D4A017;">
-                    <img src="https://qlipper.id/assets/logo.webp" alt="Qlipper AI" onerror="this.parentElement.textContent='Q'">
+                    <img src="https://qlipper.id/assets/logo.webp" alt="" onerror="this.parentElement.textContent='Q'">
                 </div>
-                <div class="card-name">Qlipper AI</div>
-                <div class="card-desc">AI video clipping engine<br>drop long, get shorts</div>
-                <div class="card-badge">qlipper.id</div>
-            </a>
-            <a href="https://vicca.id" target="_blank" rel="noopener" class="card">
-                <div class="card-icon" style="background: #6c63ff;">
-                    <img src="https://vicca.id/assets/apple-touch-icon.png" alt="Vicca" onerror="this.parentElement.textContent='V'">
+                <div>
+                    <div class="card-name">Qlipper AI</div>
+                    <div class="card-desc">Turns long podcasts into shorts on your own GPU. Runs locally, no cloud upload, pay once.</div>
+                    <div class="card-metric"><b>959</b> paying customers</div>
+                    <div class="card-badge">qlipper.id</div>
                 </div>
-                <div class="card-name">Vicca</div>
-                <div class="card-desc">AI bot for Instagram + WhatsApp<br>self-host, reply on autopilot</div>
-                <div class="card-badge">vicca.id</div>
             </a>
-        </div>
 
-        <div class="section-label">Free tools</div>
-        <div class="product-grid">
-            <a href="/typeflow/" class="card">
-                <div class="card-icon" style="background: linear-gradient(135deg, #3730A3 0%, #7C3AED 50%, #DB2777 100%);">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:48px;height:48px;">
-                        <rect x="5"  y="9"  width="2.5" height="6"  rx="1.25" fill="white" fill-opacity="0.95"/>
-                        <rect x="9"  y="7"  width="2.5" height="10" rx="1.25" fill="white" fill-opacity="0.95"/>
-                        <rect x="13" y="5"  width="2.5" height="14" rx="1.25" fill="white" fill-opacity="0.95"/>
-                        <rect x="17" y="9"  width="2.5" height="6"  rx="1.25" fill="white" fill-opacity="0.95"/>
-                    </svg>
-                </div>
-                <div class="card-name">TypeFlow <span style="font-weight:400;color:var(--text-dim);font-size:11px;">(2026)</span></div>
-                <div class="card-desc">local voice → text on macOS<br>press a key, speak, paste</div>
-            </a>
-            <a href="https://pintarnya.site/linkedin-website-cv/" target="_blank" rel="noopener" class="card">
-                <div class="card-icon" style="background: #2A83FD;">
-                    <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" style="width:48px;height:48px;">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 17h8v-1H8v1zm0-3h8v-1H8v1zm0-3h5V10H8v1z" fill-opacity="0.9"/>
-                    </svg>
-                </div>
-                <div class="card-name">LinkedIn CV <span style="font-weight:400;color:var(--text-dim);font-size:11px;">(2026)</span></div>
-                <div class="card-desc">turn LinkedIn into<br>a website CV, free</div>
-            </a>
-            <a href="/public-project/photoframe/" class="card">
-                <div class="card-icon" style="background: #22c55e;">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:48px;height:48px;">
-                        <path d="M4 4h4v4H4V4zm0 8h4v4H4v-4zm0 8h4v-4h4v4h4v-4h4v4h4v-8h-4v-4h4V4h-4v4h-4V4h-4v4H8V4H4v4h4v4H4v8z" fill="white" fill-opacity="0.9"/>
-                    </svg>
-                </div>
-                <div class="card-name">PhotoFrame <span style="font-weight:400;color:var(--text-dim);font-size:11px;">(2017)</span></div>
-                <div class="card-desc">overlay frames on photos<br>drag, resize, export</div>
-            </a>
-        </div>
+            <div class="grid-2">
+                <a href="https://pidgoapp.online" target="_blank" rel="noopener" class="card">
+                    <div class="card-icon" style="background: #0a0a0f;">
+                        <img src="https://pidgoapp.online/assets/favicon.png" alt="" onerror="this.parentElement.textContent='P'">
+                    </div>
+                    <div class="card-name">Pidgo</div>
+                    <div class="card-desc">AI landing page generator with the tracking pixel already wired in.</div>
+                    <div class="card-badge">pidgoapp.online</div>
+                </a>
+                <a href="https://vicca.id" target="_blank" rel="noopener" class="card">
+                    <div class="card-icon" style="background: #6c63ff;">
+                        <img src="https://vicca.id/assets/apple-touch-icon.png" alt="" onerror="this.parentElement.textContent='V'">
+                    </div>
+                    <div class="card-name">Vicca</div>
+                    <div class="card-desc">Self-hosted AI bot answering Instagram and WhatsApp DMs.</div>
+                    <div class="card-badge">vicca.id</div>
+                </a>
+            </div>
+        </section>
 
-        <div class="section-label">Integrations</div>
-        <div class="product-grid">
-            <a href="https://github.com/sanwidee/adb-mcp" target="_blank" rel="noopener" class="card">
-                <div class="card-icon" style="background: linear-gradient(135deg, #001E36 0%, #31A8FF 100%);">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:48px;height:48px;">
-                        <text x="12" y="16.5" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="12" fill="white">Ps</text>
-                    </svg>
-                </div>
-                <div class="card-name">Photoshop × Claude</div>
-                <div class="card-desc">control Photoshop in plain language<br>Mac launcher for adb-mcp</div>
-                <div class="card-badge">github.com/sanwidee/adb-mcp</div>
-            </a>
-        </div>
+        <!-- Free tools -->
+        <section class="section">
+            <div class="section-head">
+                <h2 class="section-title">Free tools</h2>
+                <span class="section-note">no signup</span>
+            </div>
+            <div class="list">
+                <a href="/typeflow/" class="row">
+                    <span class="row-dot" style="background: linear-gradient(135deg,#3730A3,#7C3AED);">T</span>
+                    <span class="row-body">
+                        <span class="row-name">TypeFlow</span>
+                        <span class="row-desc">Local voice to text on macOS. Hold a key, speak, paste.</span>
+                    </span>
+                    <span class="row-meta">/typeflow</span>
+                </a>
+                <a href="/tomonee/" class="row">
+                    <span class="row-dot" style="background:#0d9373;">To</span>
+                    <span class="row-body">
+                        <span class="row-name">Tomonee</span>
+                        <span class="row-desc">Personal finance assistant. Every debt in one place.</span>
+                    </span>
+                    <span class="row-meta">/tomonee</span>
+                </a>
+                <a href="https://pintarnya.site/linkedin-website-cv/" target="_blank" rel="noopener" class="row">
+                    <span class="row-dot" style="background:#2A83FD;">in</span>
+                    <span class="row-body">
+                        <span class="row-name">LinkedIn CV</span>
+                        <span class="row-desc">Paste a LinkedIn profile, get a website CV.</span>
+                    </span>
+                    <span class="row-meta">pintarnya.site</span>
+                </a>
+                <a href="/public-project/photoframe/" class="row">
+                    <span class="row-dot" style="background:#22c55e;">Pf</span>
+                    <span class="row-body">
+                        <span class="row-name">PhotoFrame</span>
+                        <span class="row-desc">Overlay frames on photos. Drag, resize, export.</span>
+                    </span>
+                    <span class="row-meta">/public-project</span>
+                </a>
+                <a href="https://github.com/sanwidee/adb-mcp" target="_blank" rel="noopener" class="row">
+                    <span class="row-dot" style="background: linear-gradient(135deg,#001E36,#31A8FF);">Ps</span>
+                    <span class="row-body">
+                        <span class="row-name">Photoshop × Claude</span>
+                        <span class="row-desc">Mac launcher for adb-mcp. Drive Photoshop in plain language.</span>
+                    </span>
+                    <span class="row-meta">github</span>
+                </a>
+            </div>
+        </section>
 
-        <div class="section-label">Coming soon</div>
-        <div class="product-grid">
-            <div class="card card-coming-soon">
-                <div class="card-icon" style="background: #60a5fa;">M</div>
-                <div class="card-name">MetaAds Agent</div>
-                <div class="card-desc">Meta Ads automation<br>self-hosted, bring your own key</div>
+        <!-- The lab -->
+        <section class="section">
+            <div class="section-head">
+                <h2 class="section-title">The lab</h2>
+                <span class="section-note">what runs on the box</span>
             </div>
-            <div class="card card-coming-soon">
-                <div class="card-icon" style="background: #f87171;">CS</div>
-                <div class="card-name">Script Engine</div>
-                <div class="card-desc">AI content scripts<br>pick a format, start recording</div>
+            <div class="list">
+                <a href="/lpengine/gallery/" class="row">
+                    <span class="row-dot" style="background:#0d9373;">LP</span>
+                    <span class="row-body">
+                        <span class="row-name">LP Engine gallery</span>
+                        <span class="row-desc">The landing-page component library behind Pidgo.</span>
+                    </span>
+                    <span class="row-meta">/lpengine</span>
+                </a>
+                <a href="https://board.weedlabs.online" target="_blank" rel="noopener" class="row">
+                    <span class="row-dot" style="background:#6965db;">B</span>
+                    <span class="row-body">
+                        <span class="row-name">Board</span>
+                        <span class="row-desc">Excalidraw canvas for sketching architecture.</span>
+                    </span>
+                    <span class="lock"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3.2 5.2V3.8a2.8 2.8 0 0 1 5.6 0v1.4" stroke="currentColor" stroke-width="1.2"/><rect x="2.2" y="5.2" width="7.6" height="5.3" rx="1.2" fill="currentColor"/></svg>sign-in</span>
+                </a>
+                <a href="https://notes.weedlabs.online" target="_blank" rel="noopener" class="row">
+                    <span class="row-dot" style="background:#0d9373;">N</span>
+                    <span class="row-body">
+                        <span class="row-name">Notes</span>
+                        <span class="row-desc">Second-brain notes, published as a static site.</span>
+                    </span>
+                    <span class="lock"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3.2 5.2V3.8a2.8 2.8 0 0 1 5.6 0v1.4" stroke="currentColor" stroke-width="1.2"/><rect x="2.2" y="5.2" width="7.6" height="5.3" rx="1.2" fill="currentColor"/></svg>sign-in</span>
+                </a>
+                <a href="https://powerhouse.weedlabs.online" target="_blank" rel="noopener" class="row">
+                    <span class="row-dot" style="background:#f59e0b;">CP</span>
+                    <span class="row-body">
+                        <span class="row-name">Creative Powerhouse</span>
+                        <span class="row-desc">Brand kit, carousel builder and post scheduler.</span>
+                    </span>
+                    <span class="lock"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3.2 5.2V3.8a2.8 2.8 0 0 1 5.6 0v1.4" stroke="currentColor" stroke-width="1.2"/><rect x="2.2" y="5.2" width="7.6" height="5.3" rx="1.2" fill="currentColor"/></svg>sign-in</span>
+                </a>
+                <a href="/analytics/" class="row">
+                    <span class="row-dot" style="background:#0ea5e9;">An</span>
+                    <span class="row-body">
+                        <span class="row-name">Analytics</span>
+                        <span class="row-desc">Self-hosted pageview tracking across every property.</span>
+                    </span>
+                    <span class="lock"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3.2 5.2V3.8a2.8 2.8 0 0 1 5.6 0v1.4" stroke="currentColor" stroke-width="1.2"/><rect x="2.2" y="5.2" width="7.6" height="5.3" rx="1.2" fill="currentColor"/></svg>sign-in</span>
+                </a>
+                <a href="https://brain.weedlabs.online" target="_blank" rel="noopener" class="row">
+                    <span class="row-dot" style="background:#8b5cf6;">Br</span>
+                    <span class="row-body">
+                        <span class="row-name">Brain</span>
+                        <span class="row-desc">MCP server exposing the notes to AI clients over OAuth.</span>
+                    </span>
+                    <span class="row-meta">MCP endpoint</span>
+                </a>
             </div>
-            <div class="card card-coming-soon">
-                <div class="card-icon" style="background: #fbbf24;">LF</div>
-                <div class="card-name">LicenseForge</div>
-                <div class="card-desc">license key backend<br>for indie developers</div>
+        </section>
+
+        <!-- How -->
+        <section class="section">
+            <div class="section-head">
+                <h2 class="section-title">How this runs</h2>
             </div>
-        </div>
+            <div class="how">
+                <p>One person builds, ships and keeps all of it alive. No team, no cloud bill from a
+                   platform vendor, no roadmap deck.</p>
+                <ul>
+                    <li>One VPS, ~30 dockerised services behind a single nginx reverse proxy</li>
+                    <li>Google sign-in on everything internal, app-level keys on the machine-facing APIs</li>
+                    <li>AI-assisted build loop: draft with Claude, review by hand, ship small and often</li>
+                    <li>Products first, infrastructure only when a product needs it</li>
+                </ul>
+            </div>
+        </section>
 
         <footer>
             <div class="footer-links">
-                <a href="https://pidgoapp.online" target="_blank" rel="noopener">Pidgoapp</a>
                 <a href="https://qlipper.id" target="_blank" rel="noopener">Qlipper</a>
+                <a href="https://pidgoapp.online" target="_blank" rel="noopener">Pidgo</a>
                 <a href="https://vicca.id" target="_blank" rel="noopener">Vicca</a>
-                <a href="/typeflow/" target="_blank" rel="noopener">TypeFlow</a>
+                <a href="/tomonee/">Tomonee</a>
+                <a href="/typeflow/">TypeFlow</a>
                 <a href="https://instagram.com/buildwithdeee" target="_blank" rel="noopener">@buildwithdeee</a>
-                <a href="mailto:hi@weedlabs.online">Email</a>
+                <a href="mailto:hi@weedlabs.online">hi@weedlabs.online</a>
             </div>
-            <p class="footer-copy">&copy; 2026 Weed Labs. All systems nominal.</p>
+            <p class="footer-next">In the workshop: a Meta Ads agent and a license-key backend. Nothing to click yet.</p>
+            <p class="footer-copy">&copy; 2026 Weed Labs</p>
         </footer>
     </div>
 </body>
