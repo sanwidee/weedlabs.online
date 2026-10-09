@@ -14,14 +14,21 @@
     <meta property="og:url" content="https://weedlabs.online/">
     <meta property="og:site_name" content="Weed Labs">
     <meta property="og:title" content="Weed Labs — One-man lab shipping AI products">
-    <meta property="og:description" content="Six products live, 959 paying Qlipper customers, ~30 services on one VPS. Built and run by one person from Indonesia.">
+    <meta property="og:description" content="Five products live, 1,000+ paying Qlipper customers, ~30 services on one VPS. Built and run by one person from Indonesia.">
     <meta property="og:locale" content="en_US">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://weedlabs.online/assets/og-cover.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Weed Labs stacked wordmark on mint: one-man lab shipping AI products">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://weedlabs.online/assets/og-cover.png">
     <meta name="twitter:title" content="Weed Labs — One-man lab shipping AI products">
-    <meta name="twitter:description" content="Six products live, 959 paying Qlipper customers, ~30 services on one VPS. Built and run by one person from Indonesia.">
+    <meta name="twitter:description" content="Five products live, 1,000+ paying Qlipper customers, ~30 services on one VPS. Built and run by one person from Indonesia.">
 
     <!-- Self-contained favicon: stacked wordmark mark -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d9373'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' font-size='38' font-weight='800' fill='%2300c896'%3EL%3C/text%3E%3C/svg%3E">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,8 +51,8 @@
             --teal-dark: #07705a;
             --teal-accent: #00c896;
             --text: #1a3a32;
-            --text-muted: #4d7a6e;
-            --text-dim: #7a9e94;
+            --text-muted: #3a6459;
+            --text-dim: #456e64;
             --glow: rgba(0, 200, 150, 0.12);
             --grain-opacity: 0.035;
             --font-sans: 'Plus Jakarta Sans', sans-serif;
@@ -65,7 +72,7 @@
                 --teal-accent: #00c896;
                 --text: #dff3ec;
                 --text-muted: #93bfb2;
-                --text-dim: #63897e;
+                --text-dim: #7ca395;
                 --glow: rgba(0, 200, 150, 0.10);
                 --grain-opacity: 0.05;
             }
@@ -588,11 +595,11 @@
 
         <div class="proof">
             <div class="proof-item">
-                <div class="proof-num">6</div>
+                <div class="proof-num">5</div>
                 <div class="proof-label">products live</div>
             </div>
             <div class="proof-item">
-                <div class="proof-num">959</div>
+                <div class="proof-num">1,000+</div>
                 <div class="proof-label">paying Qlipper<br>customers</div>
             </div>
             <div class="proof-item">
@@ -605,9 +612,6 @@
         <div class="author">
             <div class="author-avatar">
                 <span class="author-monogram" aria-hidden="true">SW</span>
-                <!-- Drop a real photo at /assets/avatar.jpg; until then the img fails and is removed,
-                     leaving the monogram. -->
-                <img src="/assets/avatar.jpg" alt="" onerror="this.remove()">
             </div>
             <div class="author-text">
                 <div class="author-name">Ikhsan Widiadyatma</div>
@@ -631,7 +635,7 @@
                 <div>
                     <div class="card-name">Qlipper AI</div>
                     <div class="card-desc">Turns long podcasts into shorts on your own GPU. Runs locally, no cloud upload, pay once.</div>
-                    <div class="card-metric"><b>959</b> paying customers</div>
+                    <div class="card-metric"><b>1,000+</b> paying customers</div>
                     <div class="card-badge">qlipper.id</div>
                 </div>
             </a>
@@ -653,6 +657,23 @@
                     <div class="card-desc">Self-hosted AI bot answering Instagram and WhatsApp DMs.</div>
                     <div class="card-badge">vicca.id</div>
                 </a>
+                <a href="https://wads.weedlabs.online" target="_blank" rel="noopener" class="card">
+                    <div class="card-icon" style="background: #FFF3DF;">
+                        <img src="/assets/wads-icon.png" alt="" onerror="this.parentElement.textContent='W'">
+                    </div>
+                    <div class="card-name">Wads</div>
+                    <div class="card-desc">Creative companion for video ads. Inspiration in, blueprint out, ads shipped.</div>
+                    <div class="card-metric"><b>Rp99.000</b> / 90 hari</div>
+                    <div class="card-badge">wads.weedlabs.online</div>
+                </a>
+                <a href="https://lamarpintar.online" target="_blank" rel="noopener" class="card">
+                    <div class="card-icon" style="background: #0a0a0f;">
+                        <img src="/assets/lamarpintar-icon.png" alt="" onerror="this.parentElement.textContent=&#39;L&#39;">
+                    </div>
+                    <div class="card-name">LamarPintar</div>
+                    <div class="card-desc">Rewrites your CV for each job posting so it clears the ATS filter.</div>
+                    <div class="card-badge">lamarpintar.online</div>
+                </a>
             </div>
         </section>
 
@@ -670,14 +691,6 @@
                         <span class="row-desc">Local voice to text on macOS. Hold a key, speak, paste.</span>
                     </span>
                     <span class="row-meta">/typeflow</span>
-                </a>
-                <a href="/tomonee/" class="row">
-                    <span class="row-dot" style="background:#0d9373;">To</span>
-                    <span class="row-body">
-                        <span class="row-name">Tomonee</span>
-                        <span class="row-desc">Personal finance assistant. Every debt in one place.</span>
-                    </span>
-                    <span class="row-meta">/tomonee</span>
                 </a>
                 <a href="https://pintarnya.site/linkedin-website-cv/" target="_blank" rel="noopener" class="row">
                     <span class="row-dot" style="background:#2A83FD;">in</span>
@@ -786,14 +799,16 @@
                 <a href="https://qlipper.id" target="_blank" rel="noopener">Qlipper</a>
                 <a href="https://pidgoapp.online" target="_blank" rel="noopener">Pidgo</a>
                 <a href="https://vicca.id" target="_blank" rel="noopener">Vicca</a>
-                <a href="/tomonee/">Tomonee</a>
                 <a href="/typeflow/">TypeFlow</a>
                 <a href="https://instagram.com/buildwithdeee" target="_blank" rel="noopener">@buildwithdeee</a>
+                <a href="/privacy.html">Privacy</a>
+                <a href="/terms.html">Terms</a>
                 <a href="mailto:hi@weedlabs.online">hi@weedlabs.online</a>
             </div>
             <p class="footer-next">In the workshop: a Meta Ads agent and a license-key backend. Nothing to click yet.</p>
             <p class="footer-copy">&copy; 2026 Weed Labs</p>
         </footer>
     </div>
+    <script src="https://weedlabs.online/analytics/t.js" data-source="weedlabs-online"></script>
 </body>
 </html>

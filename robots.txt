@@ -1,0 +1,21 @@
+# weedlabs.online — PT Weedlabs Digital Studio
+User-agent: *
+Allow: /
+
+# Internal / sign-in gated surfaces — no value in the index
+Disallow: /analytics/
+Disallow: /qlipper-ads/
+Disallow: /ai-forum/
+Disallow: /mcp-forum/
+Disallow: /mcp-forum-relay/
+Disallow: /files/
+Disallow: /portainer/
+Disallow: /netdata/
+Disallow: /error-logger/
+Disallow: /welkam-invoice/
+Disallow: /oauth2/
+Disallow: /api/
+Disallow: /ig-reels/
+Disallow: /ig-carousel/
+
+Sitemap: https://weedlabs.online/sitemap.xml

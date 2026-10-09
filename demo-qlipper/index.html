@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qlipper v2.6 — Clickable UI Demo</title>
+<meta name="description" content="Non-functional clickable prototype of the real Qlipper 2.6 desktop app chrome, rebuilt from actual v2.3 UI screenshots + real v2.6 component source, for demoing UX flows to an AI.">
+<style>
+:root{
+  --cream-50:#FDFAF3;--cream-100:#F7F1E3;--cream-200:#EDE3CC;--cream-300:#DDD0B3;--cream-400:#C4AF8A;--cream-500:#A89060;
+  --gold-100:#FEF6DC;--gold-200:#FDE9A8;--gold-300:#F9D06B;--gold-400:#E8A825;--gold-500:#C9922A;--gold-600:#A97120;--gold-700:#865519;
+  --dark-500:#0F0E0B;--dark-400:#15120D;--dark-300:#1C1812;--dark-200:#252019;--dark-100:#2E2820;--dark-50:#3A3325;
+  --ok:#3FB27F;--warn:#D8593B;--info:#3FA9FF;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;--mono:'SF Mono','Cascadia Code','Consolas',monospace;
+  --bg:var(--dark-500);--panel:var(--dark-300);--card:var(--dark-100);--elevated:var(--dark-50);
+  --border:#332C21;--text:#F2EADA;--text-dim:#C7B99F;--text-faint:#8C7A5C;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:hidden}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;color:inherit}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px}
+
+/* ================= GATE: license activation ================= */
+#gate{min-height:100vh;display:flex;align-items:center;justify-content:center;background:
+  radial-gradient(ellipse 900px 500px at 50% -10%, rgba(201,146,42,.08), transparent),
+  repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0 1px, transparent 1px 42px),
+  repeating-linear-gradient(90deg, rgba(255,255,255,.015) 0 1px, transparent 1px 42px),
+  var(--dark-500);
+  padding:1.5rem}
+.gatecard{width:100%;max-width:420px;background:var(--dark-400);border:1px solid var(--border);border-radius:20px;padding:2.2rem 2rem;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.gatecard::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold-400),transparent)}
+.gatelogo{width:64px;height:64px;margin:0 auto .9rem;border-radius:16px;background:radial-gradient(circle at 35% 30%, var(--gold-300), var(--gold-600) 70%);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:800;color:#1C1005;box-shadow:0 0 30px rgba(201,146,42,.35)}
+.gatecard h1{text-align:center;font-size:1.3rem;font-weight:800;letter-spacing:.02em;font-style:italic}
+.gatecard .tag{text-align:center;font-size:.68rem;font-weight:800;letter-spacing:.15em;color:var(--gold-400);margin:.15rem 0 1.4rem}
+.gatecard .lead{text-align:center;font-size:.85rem;font-weight:700;margin-bottom:.25rem}
+.gatecard .sub{text-align:center;font-size:.72rem;color:var(--text-faint);margin-bottom:1.3rem}
+.gfield{display:flex;align-items:center;gap:.6rem;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:.75rem .9rem;margin-bottom:.7rem}
+.gfield svg{width:15px;height:15px;color:var(--text-faint);flex:0 0 auto}
+.gfield input{flex:1;background:none;border:none;outline:none;font-size:.82rem;color:var(--text)}
+.gfield input::placeholder{color:var(--text-faint)}
+.gatebtn{width:100%;padding:.85rem;border-radius:11px;background:linear-gradient(135deg,var(--gold-400),var(--gold-600));color:#1C1005;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.4rem;box-shadow:0 6px 20px rgba(201,146,42,.25)}
+.gatecard hr{border:none;border-top:1px solid var(--border);margin:1.2rem 0}
+.gatefoot{text-align:center;font-size:.74rem;color:var(--text-faint)}
+.gatefoot a{color:var(--gold-400);font-weight:700;text-decoration:none}
+.gatemeta{text-align:center;font-size:.62rem;color:var(--text-faint);margin-top:1.4rem;font-family:var(--mono)}
+
+/* ================= APP SHELL ================= */
+#app{display:none;min-height:100vh;flex-direction:column}
+#app.show{display:flex}
+.topbar{flex:0 0 auto;display:flex;align-items:center;gap:1.1rem;padding:.7rem 1.2rem;border-bottom:1px solid var(--border);background:var(--dark-400)}
+.brand{display:flex;align-items:center;gap:.55rem;font-weight:800;font-size:1.02rem}
+.brand .mark{width:30px;height:30px;border-radius:9px;background:radial-gradient(circle at 35% 30%, var(--gold-300), var(--gold-600) 70%);display:flex;align-items:center;justify-content:center;font-weight:800;color:#1C1005;font-size:.85rem}
+.verpill{font-size:.6rem;font-weight:800;background:var(--gold-500);color:#1C1005;padding:.12rem .4rem;border-radius:20px;margin-left:.15rem}
+.tabnav{display:flex;align-items:center;gap:.15rem;overflow-x:auto;flex:1;scrollbar-width:none}
+.tabnav::-webkit-scrollbar{display:none}
+.tabbtn{display:flex;align-items:center;gap:.4rem;padding:.55rem .75rem;border-radius:9px;font-size:.72rem;font-weight:800;letter-spacing:.02em;color:var(--text-faint);white-space:nowrap;flex:0 0 auto}
+.tabbtn svg{width:14px;height:14px}
+.tabbtn:hover{color:var(--text-dim)}
+.tabbtn.on{background:var(--gold-500);color:#1C1005}
+.topbar-right{display:flex;align-items:center;gap:.4rem;flex:0 0 auto}
+.iconbtn{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--text-faint);border:1px solid transparent}
+.iconbtn:hover{background:var(--elevated);color:var(--text)}
+.iconbtn svg{width:15px;height:15px}
+.setbtn{display:flex;align-items:center;gap:.4rem;padding:.5rem .8rem;border-radius:9px;font-size:.74rem;font-weight:800;background:var(--elevated);border:1px solid var(--border);color:var(--text-dim)}
+.setbtn svg{width:14px;height:14px}
+.setbtn:hover{color:var(--text)}
+
+.main{flex:1;overflow-y:auto;position:relative}
+.page{display:none;padding:2rem 2rem 5rem;max-width:1180px;margin:0 auto}
+.page.active{display:block;animation:fade .22s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---- Home ---- */
+.hero{text-align:center;padding:2.2rem 1rem 1.6rem}
+.hero h1{font-size:2rem;font-weight:800;letter-spacing:-.01em;text-wrap:balance}
+.hero .sub{color:var(--gold-400);font-size:.85rem;font-weight:700;margin-top:.4rem}
+.pastebar{max-width:640px;margin:1.6rem auto 0;display:flex;align-items:center;gap:.6rem;background:var(--dark-300);border:1px solid var(--border);border-radius:16px;padding:.4rem .4rem .4rem 1.1rem}
+.pastebar input{flex:1;background:none;border:none;outline:none;font-size:.85rem;color:var(--text)}
+.pastebar input::placeholder{color:var(--text-faint)}
+.pastebar button{display:flex;align-items:center;gap:.45rem;padding:.75rem 1.15rem;border-radius:12px;background:var(--gold-500);color:#1C1005;font-weight:800;font-size:.8rem;white-space:nowrap}
+.pastebar button svg{width:14px;height:14px}
+.srcrow{display:flex;justify-content:center;gap:.5rem;margin-top:.9rem;flex-wrap:wrap}
+.srcchip{display:flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-radius:20px;font-size:.7rem;font-weight:700;background:var(--dark-300);border:1px solid var(--border);color:var(--text-faint)}
+.srcchip svg{width:12px;height:12px}
+.srcchip.on{background:rgba(201,146,42,.16);border-color:var(--gold-600);color:var(--gold-400)}
+.srcchip.soon{opacity:.45}
+.actiongrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.2rem}
+@media(max-width:720px){.actiongrid{grid-template-columns:repeat(2,1fr)}}
+.actioncard{background:var(--dark-300);border:1px solid var(--border);border-radius:16px;padding:1.6rem 1rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.7rem}
+.actioncard:hover{border-color:var(--gold-600)}
+.actioncard .ic{width:46px;height:46px;border-radius:12px;background:var(--elevated);display:flex;align-items:center;justify-content:center;color:var(--gold-400)}
+.actioncard .ic svg{width:20px;height:20px}
+.actioncard b{font-size:.72rem;font-weight:800;letter-spacing:.06em}
+
+/* ---- generic tool page head ---- */
+.toolhead{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1.3rem;flex-wrap:wrap}
+.toolhead .lhs{display:flex;align-items:center;gap:.6rem}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--gold-500);flex:0 0 auto}
+.toolhead h2{font-size:1.05rem;font-weight:800}
+.badge{font-size:.6rem;font-weight:800;letter-spacing:.05em;background:var(--elevated);border:1px solid var(--border);color:var(--gold-400);padding:.2rem .5rem;border-radius:20px}
+.tgrid{display:grid;grid-template-columns:1.05fr 1.35fr;gap:1.1rem;align-items:start}
+@media(max-width:920px){.tgrid{grid-template-columns:1fr}}
+.tpanel{background:var(--dark-300);border:1px solid var(--border);border-radius:16px;padding:1.2rem}
+.label{font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);margin:1rem 0 .55rem}
+.label:first-child{margin-top:0}
+.srctabs{display:flex;gap:.5rem}
+.srctab{flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.65rem;border-radius:10px;font-size:.75rem;font-weight:800;background:var(--card);border:1px solid var(--border);color:var(--text-dim)}
+.srctab svg{width:13px;height:13px}
+.srctab.on{background:var(--gold-500);color:#1C1005;border-color:transparent}
+.textin{width:100%;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:.68rem .85rem;font-size:.82rem;color:var(--text)}
+.textin:focus{outline:none;border-color:var(--gold-500)}
+textarea.textin{resize:vertical}
+.modelrow{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:.65rem .85rem}
+.modelrow .m{display:flex;align-items:center;gap:.5rem;font-size:.82rem;font-weight:700;color:var(--gold-400)}
+.modelrow a{font-size:.7rem;color:var(--text-faint);font-weight:700}
+.togglepair{display:flex;gap:.5rem}
+.togglepair button{flex:1;padding:.6rem;border-radius:10px;font-size:.72rem;font-weight:800;background:var(--card);border:1px solid var(--border);color:var(--text-dim)}
+.togglepair button.on{background:var(--gold-500);color:#1C1005;border-color:transparent}
+.thumbgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
+@media(max-width:640px){.thumbgrid{grid-template-columns:repeat(2,1fr)}}
+.vthumb{position:relative;border-radius:11px;overflow:hidden;border:1px solid var(--border);background:linear-gradient(160deg,#3a3d46,#1d1f26);aspect-ratio:1/1;cursor:pointer}
+.vthumb.sel{border-color:var(--gold-500);box-shadow:0 0 0 2px rgba(201,146,42,.3)}
+.vthumb .tags{position:absolute;top:5px;left:5px;display:flex;gap:3px}
+.vthumb .tags span{font-size:.55rem;font-weight:800;padding:.1rem .3rem;border-radius:4px;background:rgba(0,0,0,.6)}
+.vthumb .tags span.cc{background:var(--gold-500);color:#1C1005}
+.vthumb .name{position:absolute;bottom:0;left:0;right:0;font-size:.6rem;font-weight:700;padding:.35rem .4rem;background:linear-gradient(0deg,rgba(0,0,0,.75),transparent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.optgrid{display:grid;gap:.5rem}
+.optgrid.c3{grid-template-columns:repeat(3,1fr)}
+.optgrid.c4{grid-template-columns:repeat(4,1fr)}
+.optgrid.c2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:640px){.optgrid.c4{grid-template-columns:repeat(2,1fr)}}
+.opt{border:1.5px solid var(--border);border-radius:12px;padding:.7rem .5rem;text-align:center;font-size:.72rem;font-weight:700;color:var(--text-dim);background:var(--card);display:flex;flex-direction:column;align-items:center;gap:.25rem}
+.opt small{font-weight:600;color:var(--text-faint);font-size:.6rem}
+.opt.sel{border-color:var(--gold-500);background:rgba(201,146,42,.12);color:var(--gold-400)}
+.opt.sel small{color:var(--gold-500)}
+.stylecard{border:1.5px solid var(--border);border-radius:12px;padding:.6rem;background:var(--card);text-align:center;cursor:pointer}
+.stylecard.sel{border-color:var(--gold-500)}
+.stylecard .swimg{aspect-ratio:9/14;border-radius:8px;margin-bottom:.5rem;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+.stylecard .n{font-size:.68rem;font-weight:800}
+.stylecard .d{font-size:.58rem;color:var(--text-faint)}
+.previewempty{border:1.5px dashed var(--border);border-radius:16px;padding:3.4rem 1.4rem;text-align:center;color:var(--text-faint)}
+.previewempty svg{width:34px;height:34px;margin:0 auto 1rem;opacity:.55}
+.previewempty b{display:block;color:var(--text-dim);font-size:.9rem;margin-bottom:.3rem}
+.previewempty p{font-size:.76rem;max-width:34ch;margin:0 auto;line-height:1.6}
+input[type=range]{width:100%;accent-color:var(--gold-500)}
+.rangelab{display:flex;justify-content:space-between;font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);margin-bottom:.4rem}
+.rangelab span{font-family:var(--mono);color:var(--text-dim);text-transform:none;letter-spacing:0}
+.btn{display:inline-flex;align-items:center;gap:.45rem;padding:.68rem 1.1rem;border-radius:11px;font-size:.8rem;font-weight:800}
+.btn svg{width:14px;height:14px}
+.btn-gold{background:var(--gold-500);color:#1C1005;box-shadow:0 4px 14px rgba(201,146,42,.22)}
+.btn-gold:hover{background:var(--gold-400)}
+.btn-ghost{background:var(--elevated);border:1px solid var(--border);color:var(--text-dim)}
+.btn-full{width:100%;justify-content:center}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ---- My Files ---- */
+.masterhead{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+.masterhead .mtitle{font-size:1.05rem;font-weight:800;line-height:1.35;max-width:60ch}
+.masterhead .msub{font-size:.68rem;color:var(--gold-400);font-weight:800;letter-spacing:.05em;margin-top:.3rem}
+.player{aspect-ratio:16/8;background:linear-gradient(160deg,#2b2c33,#171820);border-radius:16px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:.6rem;overflow:hidden}
+.player .playbtn{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.14);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.25)}
+.player .playbtn svg{width:22px;height:22px;fill:#fff;margin-left:3px}
+.scrub{position:absolute;left:0;right:0;bottom:0;padding:.7rem .9rem;background:linear-gradient(0deg,rgba(0,0,0,.55),transparent);display:flex;align-items:center;gap:.6rem;font-size:.68rem;color:#fff}
+.scrub .bar{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.25);position:relative}
+.scrub .bar i{position:absolute;left:0;top:0;bottom:0;width:16%;background:var(--gold-400);border-radius:4px}
+.cliprow{display:flex;gap:.9rem;padding:.9rem;border-radius:14px;border:1px solid var(--border);background:var(--dark-300);margin-bottom:.7rem;cursor:pointer}
+.cliprow:hover{border-color:var(--gold-600)}
+.cliprow .thumb{width:96px;aspect-ratio:9/16;border-radius:10px;background:linear-gradient(160deg,#3a3d46,#1d1f26);flex:0 0 auto;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--text-faint)}
+.cliprow .thumb .len{position:absolute;bottom:4px;right:4px;font-family:var(--mono);font-size:.58rem;background:rgba(0,0,0,.6);padding:1px 4px;border-radius:4px;color:#fff}
+.cliprow .body{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.cliprow .top{display:flex;justify-content:space-between;gap:.5rem}
+.cliprow .t{font-weight:800;font-size:.85rem}
+.score{font-family:var(--mono);font-weight:800;font-size:.8rem;color:var(--gold-400);flex:0 0 auto}
+.score small{font-size:.6rem;color:var(--text-faint);font-weight:600}
+.reason{font-size:.72rem;color:var(--text-faint);line-height:1.55;margin:.3rem 0 .6rem}
+.rowacts{display:flex;gap:.4rem}
+.miniact{display:flex;align-items:center;gap:.3rem;padding:.32rem .6rem;border-radius:7px;font-size:.66rem;font-weight:800;background:var(--elevated);border:1px solid var(--border);color:var(--text-dim)}
+.miniact.primary{background:var(--gold-500);color:#1C1005;border:none}
+.miniact svg{width:11px;height:11px}
+
+/* ---- overlay/modal ---- */
+.overlay{position:fixed;inset:0;background:rgba(6,5,3,.68);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:60;padding:2rem}
+.overlay.open{display:flex}
+.modal{background:var(--dark-300);border:1px solid var(--border);border-radius:20px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.modal.wide{max-width:940px}
+.modal.mid{max-width:640px}
+.modal.cream{background:var(--cream-100,#F7F1E3);color:#241B0C;border-color:var(--cream-300,#DDD0B3)}
+.modhead{display:flex;justify-content:space-between;align-items:flex-start;padding:1.15rem 1.35rem;border-bottom:1px solid var(--border);flex:0 0 auto}
+.modal.cream .modhead{border-color:var(--cream-300,#DDD0B3)}
+.modhead h2{font-size:1.02rem;font-weight:800}
+.modhead p{font-size:.74rem;color:var(--text-faint);margin-top:.2rem}
+.modbody{padding:1.25rem 1.35rem;overflow-y:auto}
+.modfoot{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.35rem;border-top:1px solid var(--border);flex:0 0 auto}
+.modal.cream .modfoot{border-color:var(--cream-300,#DDD0B3)}
+.xbtn{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-faint)}
+.xbtn:hover{background:var(--elevated);color:var(--text)}
+.xbtn svg{width:15px;height:15px}
+
+/* Settings modal specifics */
+.aimodelgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+@media(max-width:560px){.aimodelgrid{grid-template-columns:repeat(2,1fr)}}
+.aimodel{border:1.5px solid var(--border);border-radius:12px;padding:.9rem .6rem;text-align:center;background:var(--card)}
+.aimodel .ic{font-size:1.25rem;margin-bottom:.4rem}
+.aimodel b{display:block;font-size:.8rem;font-weight:800}
+.aimodel small{font-size:.62rem;color:var(--text-faint)}
+.aimodel.sel{border-color:var(--gold-500);background:rgba(201,146,42,.1)}
+.aimodel.sel b{color:var(--gold-400)}
+.keyrow{display:flex;gap:.5rem;margin-top:.5rem}
+.keyrow input{flex:1}
+.savedhint{display:flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--ok);font-weight:700}
+.savedhint svg{width:13px;height:13px}
+
+/* Edit video modal */
+.tabbar{display:flex;gap:.3rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.3rem;margin-bottom:1.1rem}
+.tabbar button{flex:1;padding:.55rem;border-radius:9px;font-size:.76rem;font-weight:800;color:var(--text-faint);display:flex;align-items:center;justify-content:center;gap:.4rem}
+.tabbar button svg{width:13px;height:13px}
+.tabbar button.on{background:var(--elevated);color:var(--gold-400)}
+.evgrid{display:grid;grid-template-columns:1.5fr 1fr;gap:1.2rem}
+@media(max-width:760px){.evgrid{grid-template-columns:1fr}}
+.field{margin-bottom:.9rem}
+.field label{font-size:.64rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);display:block;margin-bottom:.4rem}
+.field .val{float:right;font-family:var(--mono);color:var(--text-dim);font-weight:600;text-transform:none;letter-spacing:0}
+.chiprow{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{padding:.4rem .75rem;border-radius:9px;font-size:.68rem;font-weight:800;border:1px solid var(--border);background:var(--card);color:var(--text-dim)}
+.chip.sel{border-color:var(--gold-500);color:var(--gold-400)}
+.colorrow{display:flex;align-items:center;gap:.5rem}
+.swatch{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);flex:0 0 auto}
+.colorrow input[type=text]{flex:1;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:.5rem .7rem;font-family:var(--mono);font-size:.72rem;color:var(--text)}
+.previewbox{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:.9rem;position:sticky;top:0}
+.previewbox .pvhead{display:flex;justify-content:space-between;font-size:.64rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);margin-bottom:.6rem}
+.pvframe{aspect-ratio:9/16;border-radius:12px;background:linear-gradient(170deg,#3a3733,#17140f);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.pvframe .face{width:64%;height:64%;border-radius:50% 50% 44% 44%/58% 58% 42% 42%;background:linear-gradient(160deg,#c99b6f,#8a5a3a);opacity:.9}
+.hookoverlay{position:absolute;left:8%;right:8%;font-weight:800;font-size:.92rem;line-height:1.25;padding:.4rem .6rem;border-radius:6px;text-align:center}
+.pvcaption{position:absolute;left:6%;right:6%;bottom:14%;text-align:center;font-weight:800;font-size:.8rem;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+
+/* ---- Welcome tour modal (light/cream, matches real onboarding screenshot) ---- */
+.tourcard{background:var(--cream-100,#F7F1E3);color:#241B0C;border-radius:20px;max-width:460px;width:100%;padding:1.6rem 1.6rem 1.2rem;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.tourcard .xbtn{position:absolute;top:1rem;right:1rem;color:#8C7A5C}
+.tourpill{display:inline-flex;padding:.28rem .7rem;border-radius:20px;background:var(--gold-500);color:#1C1005;font-size:.68rem;font-weight:800}
+.tourcard h3{font-size:1.15rem;font-weight:800;margin:.7rem 0 .5rem}
+.tourcard p{font-size:.8rem;line-height:1.65;color:#5B4B33}
+.touricons{display:flex;justify-content:space-between;margin:1.2rem 0}
+.touricons .ti{display:flex;flex-direction:column;align-items:center;gap:.4rem;font-size:.62rem;font-weight:700;color:#5B4B33}
+.touricons .ti .box{width:42px;height:42px;border-radius:12px;background:#EDE3CC;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.tourfoot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #EDE3CC;padding-top:.9rem;margin-top:.3rem}
+.tourdots{display:flex;gap:5px}
+.tourdots i{width:6px;height:6px;border-radius:50%;background:#DDD0B3}
+.tourdots i.on{width:16px;background:var(--gold-500)}
+.tourskip{font-size:.74rem;color:#8C7A5C;font-weight:700}
+.tournext{display:flex;align-items:center;gap:.4rem;padding:.55rem 1rem;border-radius:10px;background:var(--gold-500);color:#1C1005;font-weight:800;font-size:.78rem}
+.tournext svg{width:13px;height:13px}
+
+/* ---- Processing (journey addition, v2.6) ---- */
+.procwrap{max-width:620px;margin:1.5rem auto 0}
+.proctitle{display:flex;align-items:center;gap:.7rem;margin-bottom:.3rem}
+.spin{width:17px;height:17px;border-radius:50%;border:2.5px solid var(--border);border-top-color:var(--gold-400);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.proctitle h2{font-size:1rem;font-weight:800}
+.phase{display:flex;gap:.9rem;padding:.8rem 0;border-bottom:1px solid var(--border)}
+.phase:last-child{border-bottom:none}
+.phase .pnum{width:26px;height:26px;border-radius:50%;background:var(--elevated);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.68rem;font-weight:800;color:var(--text-faint);flex:0 0 auto}
+.phase.done .pnum{background:var(--ok);border-color:var(--ok);color:#fff}
+.phase.active .pnum{background:var(--gold-500);border-color:var(--gold-500);color:#1C1005}
+.phase .pbody{flex:1}
+.phase .pt{font-weight:800;font-size:.82rem;display:flex;justify-content:space-between}
+.phase .pt span.pct{font-family:var(--mono);color:var(--text-faint);font-weight:700;font-size:.7rem}
+.phase .pd{font-size:.7rem;color:var(--text-faint);margin-top:.15rem}
+.pbar{margin-top:.5rem;height:6px;border-radius:6px;background:var(--card);overflow:hidden}
+.pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold-600),var(--gold-400));border-radius:6px;transition:width .4s}
+.dr-note{margin-top:1.3rem;background:var(--dark-300);border:1px solid var(--border);border-radius:12px;padding:.8rem .95rem;font-size:.72rem;color:var(--text-dim);display:flex;gap:.6rem;align-items:flex-start;line-height:1.55}
+.dr-note svg{width:15px;height:15px;flex:0 0 auto;color:var(--info);margin-top:1px}
+
+/* ---- Log Stream floating pill + drawer ---- */
+.logpill{position:fixed;right:1.2rem;bottom:1.2rem;display:flex;align-items:center;gap:.5rem;background:var(--dark-300);border:1px solid var(--border);border-radius:20px;padding:.5rem .9rem .5rem .7rem;font-size:.7rem;font-weight:800;color:var(--text-dim);z-index:45;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.logpill svg{width:12px;height:12px}
+.logdot{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.logdrawer{position:fixed;right:1.2rem;bottom:3.6rem;width:340px;max-height:280px;background:var(--dark-400);border:1px solid var(--border);border-radius:14px;padding:.8rem;font-family:var(--mono);font-size:.68rem;line-height:1.8;color:var(--text-faint);overflow-y:auto;display:none;z-index:46;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.logdrawer.open{display:block}
+.logdrawer .ok{color:var(--ok)}
+.logdrawer .warn{color:var(--gold-400)}
+
+/* toast */
+.toast{position:fixed;bottom:1.4rem;left:1.4rem;background:var(--dark-300);border:1px solid var(--border);border-radius:13px;padding:.85rem 1.1rem;display:flex;gap:.7rem;align-items:center;box-shadow:0 12px 30px rgba(0,0,0,.35);transform:translateY(20px);opacity:0;pointer-events:none;transition:.25s;z-index:80}
+.toast.show{transform:none;opacity:1}
+.toast .ic{width:28px;height:28px;border-radius:8px;background:rgba(63,178,127,.16);color:var(--ok);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.toast .ic svg{width:15px;height:15px}
+.toast .tt{font-size:.8rem;font-weight:800}
+.toast .td{font-size:.68rem;color:var(--text-faint)}
+
+.hint{position:fixed;left:1.4rem;top:1rem;font-family:var(--mono);font-size:.62rem;color:var(--text-faint);background:var(--dark-300);border:1px solid var(--border);border-radius:10px;padding:.5rem .8rem;max-width:280px;line-height:1.6;z-index:40}
+.hint b{color:var(--gold-400)}
+@media(max-width:900px){.hint{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ============ GATE: license activation (real screen 00) ============ -->
+<div id="gate">
+  <div class="gatecard">
+    <div class="gatelogo">Q</div>
+    <h1>QLIPPER</h1>
+    <div class="tag">AI VIDEO CLIPPER</div>
+    <div class="lead">Enter your email and license key to activate</div>
+    <div class="sub">License key was sent to your email after purchase</div>
+    <div class="gfield"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 7l10 6 10-6"/></svg><input type="text" placeholder="Your email address" value="demo@qlipper.id"></div>
+    <div class="gfield"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="15" r="4"/><path d="M10.5 12.5L20 3m-4 4l2 2m-6-2l2 2"/></svg><input type="text" placeholder="QLIP-XXXXXXXX-XXXX-XXXX" value="QLIP-2N4K91XZ-88TR-QW21"></div>
+    <button class="gatebtn" onclick="enterApp()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="8" cy="15" r="4"/><path d="M10.5 12.5L20 3m-4 4l2 2m-6-2l2 2"/></svg>
+      ACTIVATE LICENSE
+    </button>
+    <hr>
+    <div class="gatefoot">Don't have a license key yet?<br><a href="#">Activate at member.qlipper.id/activation</a></div>
+    <div class="gatemeta">🔒 Licensed access only · HTTPS encrypted</div>
+  </div>
+</div>
+
+<!-- ============ APP SHELL ============ -->
+<div id="app">
+  <div class="topbar">
+    <div class="brand"><span class="mark">Q</span>Qlipper<span class="verpill">v2.6</span></div>
+    <div class="tabnav">
+      <button class="tabbtn on" data-page="home" onclick="goPage('home',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>HOME</button>
+      <button class="tabbtn" data-page="download" onclick="goPage('download',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0l-4-4m4 4l4-4M4 21h16"/></svg>DOWNLOAD</button>
+      <button class="tabbtn" data-page="analysis" onclick="goPage('analysis',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>AI ANALYSIS</button>
+      <button class="tabbtn" data-page="clipper" onclick="goPage('clipper',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.5 15.5M20 20L8.5 8.5"/></svg>CLIPPER</button>
+      <button class="tabbtn" data-page="subtitle" onclick="goPage('subtitle',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>SUBTITLE</button>
+      <button class="tabbtn" data-page="watermark" onclick="goPage('watermark',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 0 1 4 4L7 21l-4 1 1-4z"/></svg>WATERMARK</button>
+      <button class="tabbtn" data-page="silence" onclick="goPage('silence',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4zM23 9l-6 6m0-6l6 6"/></svg>SILENCE</button>
+      <button class="tabbtn" data-page="broll" onclick="goPage('broll',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>B-ROLL</button>
+      <button class="tabbtn" data-page="myfiles" onclick="goPage('myfiles',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>MY FILES</button>
+      <button class="tabbtn" data-page="assets" onclick="goPage('assets',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>ASSETS</button>
+    </div>
+    <div class="topbar-right">
+      <button class="iconbtn" title="Tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></button>
+      <button class="iconbtn" title="Bantuan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7v.3M12 17h.01"/></svg></button>
+      <button class="iconbtn" title="Mobile companion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></button>
+      <button class="setbtn" onclick="openModal('modal-settings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- ---------- HOME (real screen 02) ---------- -->
+    <div class="page active" id="page-home">
+      <div class="hero">
+        <h1>Hi Qlippers, Mau bikin video apa hari ini?</h1>
+        <div class="sub">Universal Pipeline for AI-Driven Video Content.</div>
+        <div class="pastebar">
+          <input type="text" placeholder="Paste YouTube link..." value="https://youtube.com/watch?v=xJk2926tId0">
+          <button onclick="goPage('clipper')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>Download &amp; Analyze</button>
+        </div>
+        <div class="srcrow">
+          <div class="srcchip on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 12a2.9 2.9 0 0 0-2-2.7C19 9 12 9 12 9s-7 0-9 .3A2.9 2.9 0 0 0 1 12a30 30 0 0 0 0 6 2.9 2.9 0 0 0 2 2.7c2 .3 9 .3 9 .3s7 0 9-.3a2.9 2.9 0 0 0 2-2.7 30 30 0 0 0 0-6z"/></svg>YouTube</div>
+          <div class="srcchip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 20h16M6 16l6-12 6 12"/></svg>Local File</div>
+          <div class="srcchip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/></svg>Asset Library (42)</div>
+          <div class="srcchip soon">Twitch · soon</div>
+          <div class="srcchip soon">TikTok · soon</div>
+        </div>
+      </div>
+
+      <div class="actiongrid">
+        <div class="actioncard" onclick="goPage('download')"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0l-4-4m4 4l4-4M4 21h16"/></svg></div><b>DOWNLOAD</b></div>
+        <div class="actioncard" onclick="goPage('analysis')"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div><b>AI ANALYSIS</b></div>
+        <div class="actioncard" onclick="goPage('clipper')"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.5 15.5M20 20L8.5 8.5"/></svg></div><b>CLIPPER</b></div>
+        <div class="actioncard" onclick="goPage('myfiles')"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9l-2-2H4a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1z"/></svg></div><b>MY FILES</b></div>
+        <div class="actioncard" onclick="goPage('subtitle')"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/></svg></div><b>SUBTITLE</b></div>
+        <div class="actioncard" onclick="goPage('assets')"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><b>ASSETS</b></div>
+      </div>
+    </div>
+
+    <!-- ---------- DOWNLOAD ---------- -->
+    <div class="page" id="page-download">
+      <div class="toolhead"><div class="lhs"><span class="dot"></span><h2>YouTube Download</h2></div></div>
+      <div class="tgrid">
+        <div class="tpanel">
+          <div class="label">YouTube URL</div>
+          <input class="textin" type="text" value="https://youtube.com/watch?v=xJk2926tId0">
+          <div class="label">Kualitas unduhan</div>
+          <div class="optgrid c4">
+            <div class="opt">480p</div><div class="opt sel">720p</div><div class="opt">1080p</div><div class="opt">4K</div>
+          </div>
+          <button class="btn btn-gold btn-full" style="margin-top:1rem" onclick="goPage('analysis')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 3v13m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+            Download
+          </button>
+        </div>
+        <div class="tpanel">
+          <div class="previewempty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v13m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+            <b>Belum ada video</b>
+            <p>Tempel link YouTube di kiri untuk mulai unduh — video tidak pernah meninggalkan laptop kamu.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- AI ANALYSIS (real screen 03) ---------- -->
+    <div class="page" id="page-analysis">
+      <div class="toolhead"><div class="lhs"><span class="dot"></span><h2>AI Viral Moment Lab</h2></div></div>
+      <div class="tgrid">
+        <div class="tpanel">
+          <div class="label">Video Source</div>
+          <div class="srctabs"><button class="srctab on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></svg>YouTube URL</button><button class="srctab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/></svg>Asset Library</button></div>
+          <div class="label">YouTube URL</div>
+          <input class="textin" type="text" placeholder="YouTube URL...">
+          <div class="label">AI Model</div>
+          <div class="modelrow"><span class="m">✨ Gemini</span><a href="#">🔑 Set key</a></div>
+          <div class="label">Mode</div>
+          <div class="togglepair"><button class="on">AUTO MODE</button><button>ADVANCED MODE</button></div>
+          <div class="label">Extraction Logic</div>
+          <textarea class="textin" rows="3" placeholder="E.g. Focus on viral hooks and funny moments...">Cari momen yang punya angka spesifik atau statistik kejut.</textarea>
+          <button class="btn btn-gold btn-full" style="margin-top:1.1rem" onclick="showToast('Analisis dimulai','Klip hasil akan muncul di My Files.')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>
+            Analyze Now
+          </button>
+        </div>
+        <div class="tpanel">
+          <div class="label" style="margin-top:0;display:flex;justify-content:space-between"><span>Analysis Results</span><span style="color:var(--text-dim);cursor:pointer">Copy Data</span></div>
+          <div class="previewempty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>
+            <b>LENS_SCAN_INACTIVE</b>
+            <p>Jalankan analisis di kiri buat lihat momen viral yang AI temukan.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- CLIPPER (real screen 04, = pipeline config) ---------- -->
+    <div class="page" id="page-clipper">
+      <div class="toolhead"><div class="lhs"><span class="dot"></span><h2>Assemble Clips</h2></div></div>
+      <div class="tgrid" style="grid-template-columns:1fr">
+        <div class="tpanel">
+          <div class="label" style="margin-top:0">Video Source</div>
+          <div class="srctabs"><button class="srctab on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/></svg>Asset Library</button><button class="srctab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16M6 16l6-12 6 12"/></svg>Upload File</button></div>
+
+          <div class="label">Select Asset</div>
+          <div class="thumbgrid" id="clipper-assets">
+            <div class="vthumb sel" onclick="pickThumb('clipper-assets',this)"><div class="tags"><span class="cc">CC</span></div><div class="name">video_17764470228.mp4</div></div>
+            <div class="vthumb" onclick="pickThumb('clipper-assets',this)"><div class="tags"><span class="cc">CC</span></div><div class="name">video_17764466508.mp4</div></div>
+            <div class="vthumb" onclick="pickThumb('clipper-assets',this)"><div class="tags"><span class="cc">CC</span></div><div class="name">video_17764462442.mp4</div></div>
+            <div class="vthumb" onclick="pickThumb('clipper-assets',this)"><div class="tags"><span class="cc">CC</span></div><div class="name">video_17764459388.mp4</div></div>
+          </div>
+
+          <div class="label">1. Aspect Ratio</div>
+          <div class="optgrid c4" id="ratio-grid">
+            <div class="opt">🖥️ Original</div>
+            <div class="opt sel" onclick="pick('ratio-grid',this)">📱 9:16 Vertical</div>
+            <div class="opt" onclick="pick('ratio-grid',this)">🖼️ 3:4 Portrait</div>
+            <div class="opt" onclick="pick('ratio-grid',this)">⬛ 1:1 Square</div>
+          </div>
+
+          <div class="label">2. Style</div>
+          <div class="optgrid c4" id="style-grid" style="grid-template-columns:repeat(5,1fr)">
+            <div class="stylecard sel" onclick="pick('style-grid',this)"><div class="swimg" style="background:linear-gradient(160deg,#2a2f52,#1a1d33)">📱</div><div class="n">Blur (Fast)</div><div class="d">Static blur, faster</div></div>
+            <div class="stylecard" onclick="pick('style-grid',this)"><div class="swimg" style="background:linear-gradient(160deg,#1c5f7a,#0f3a4d)">📱</div><div class="n">Blur (Motion)</div><div class="d">Dynamic blur</div></div>
+            <div class="stylecard" onclick="pick('style-grid',this)"><div class="swimg" style="background:linear-gradient(160deg,#a97120,#5e3a10)">⬜</div><div class="n">Zoom Crop</div><div class="d">Center crop full fill</div></div>
+            <div class="stylecard" onclick="pick('style-grid',this)"><div class="swimg" style="background:linear-gradient(160deg,#4a3d8f,#2a2154)">📱</div><div class="n">Square (Fast)</div><div class="d">1:1 static blur</div></div>
+            <div class="stylecard" onclick="pick('style-grid',this)"><div class="swimg" style="background:linear-gradient(160deg,#6a2f8f,#3a1a54)">📱</div><div class="n">Square (Motion)</div><div class="d">1:1 dynamic blur</div></div>
+          </div>
+
+          <div class="label">3. Jumlah Klip <span style="color:var(--text-faint);font-weight:600;text-transform:none">(v2.6)</span></div>
+          <div class="optgrid c3" id="count-grid">
+            <div class="opt sel" onclick="pick('count-grid',this)">Auto<small>AI tentukan</small></div>
+            <div class="opt" onclick="pick('count-grid',this)">Jumlah pasti<small>cth. 5 klip</small></div>
+            <div class="opt" onclick="pick('count-grid',this)">Sebanyak mungkin<small>semua bagus</small></div>
+          </div>
+
+          <div class="label">4. Bahasa <span style="color:var(--text-faint);font-weight:600;text-transform:none">(v2.6)</span></div>
+          <div class="optgrid c4" id="lang-grid">
+            <div class="opt sel" onclick="pick('lang-grid',this)">Auto</div>
+            <div class="opt" onclick="pick('lang-grid',this)">Indonesia</div>
+            <div class="opt" onclick="pick('lang-grid',this)">English</div>
+            <div class="opt" onclick="pick('lang-grid',this)">Melayu</div>
+          </div>
+
+          <div style="display:flex;gap:.6rem;margin-top:1.2rem">
+            <button class="btn btn-ghost" onclick="openModal('modal-editvideo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Style Settings</button>
+            <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="startProcessing()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>
+              Get AI Clips
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- PROCESSING (v2.6 Farm Mode addition) ---------- -->
+    <div class="page" id="page-processing">
+      <div class="procwrap">
+        <div class="tpanel">
+          <div class="proctitle"><div class="spin"></div><h2 id="proctitle">Memproses video kamu</h2></div>
+          <div class="label" style="margin:0 0 1.2rem">Farm Mode job queue — tiap fase progress-nya jujur, bukan bar yang diam-diam macet.</div>
+
+          <div class="phase done"><div class="pnum">✓</div><div class="pbody"><div class="pt">Download<span class="pct">100%</span></div><div class="pd">yt-dlp · 720p</div></div></div>
+          <div class="phase done"><div class="pnum">✓</div><div class="pbody"><div class="pt">Transcribe<span class="pct">100%</span></div><div class="pd">Whisper lokal · Bahasa Indonesia terdeteksi</div></div></div>
+          <div class="phase active" id="phase-analyze">
+            <div class="pnum">3</div>
+            <div class="pbody"><div class="pt">Analyze (AI)<span class="pct" id="analyze-pct">62%</span></div><div class="pd">Gemini mencari momen hook + payoff terkuat...</div><div class="pbar"><i style="width:62%" id="analyze-bar"></i></div></div>
+          </div>
+          <div class="phase" id="phase-render"><div class="pnum">4</div><div class="pbody"><div class="pt">Render klip<span class="pct">menunggu</span></div><div class="pd">FFmpeg + overlay Satori + subtitle ASS</div></div></div>
+
+          <div class="dr-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5m0 3h.01"/></svg><span>Laptop bukan yang tercepat? Wajar mode lokal lebih lambat — bukan error. Cek Doctor Mode di Settings kalau macet.</span></div>
+          <div style="margin-top:1.2rem;display:flex;justify-content:flex-end"><button class="btn btn-gold" onclick="finishProcessing()">Simulasikan selesai →</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- SUBTITLE (real screen 06) ---------- -->
+    <div class="page" id="page-subtitle">
+      <div class="toolhead"><div class="lhs"><span class="dot"></span><h2>AI Subtitle Editor</h2></div></div>
+      <div class="tpanel">
+        <div class="label" style="margin-top:0">Select Source Video</div>
+        <div class="thumbgrid" id="sub-assets" style="grid-template-columns:repeat(4,1fr)">
+          <div class="vthumb sel" onclick="pickThumb('sub-assets',this)"><div class="tags"><span>AUDIO</span><span class="cc">CC</span></div><div class="name">[DL] video17764...</div></div>
+          <div class="vthumb" onclick="pickThumb('sub-assets',this)"><div class="tags"><span>AUDIO</span><span class="cc">CC</span></div><div class="name">video_17764466...</div></div>
+          <div class="vthumb" onclick="pickThumb('sub-assets',this)"><div class="tags"><span>AUDIO</span><span class="cc">CC</span></div><div class="name">video_17764462...</div></div>
+          <div class="vthumb" onclick="pickThumb('sub-assets',this)"><div class="tags"><span>AUDIO</span><span class="cc">CC</span></div><div class="name">video_17764459...</div></div>
+        </div>
+        <div class="tgrid" style="margin-top:1.2rem">
+          <div>
+            <div class="label" style="margin-top:0">Engine</div>
+            <div class="optgrid c2"><div class="opt sel">🦙 Whisper Lokal</div><div class="opt">☁️ Groq Cloud</div></div>
+            <div class="label">Posisi subtitle</div>
+            <div class="optgrid c3"><div class="opt">Atas</div><div class="opt">Tengah</div><div class="opt sel">Bawah</div></div>
+            <div class="field" style="margin-top:1rem"><label>Sync offset <span class="val" id="offset-val">0.0s</span></label><input type="range" min="-20" max="20" value="0" oninput="document.getElementById('offset-val').textContent=(this.value/10).toFixed(1)+'s'"></div>
+          </div>
+          <div>
+            <div class="label" style="margin-top:0">Transkrip (klik kata untuk edit)</div>
+            <div style="font-size:.85rem;line-height:2.1">
+              <span class="chip sel" style="display:inline;padding:.15rem .3rem;margin:0 1px">Banyak</span>
+              <span class="chip sel" style="display:inline;padding:.15rem .3rem;margin:0 1px">orang</span>
+              <span class="chip sel" style="display:inline;padding:.15rem .3rem;margin:0 1px">mikir</span>
+              <span class="chip" style="display:inline;padding:.15rem .3rem;margin:0 1px">kaya</span>
+              <span class="chip" style="display:inline;padding:.15rem .3rem;margin:0 1px">itu</span>
+              <span class="chip" style="display:inline;padding:.15rem .3rem;margin:0 1px">soal</span>
+              <span class="chip" style="display:inline;padding:.15rem .3rem;margin:0 1px">gaji</span>
+              <span class="chip" style="display:inline;padding:.15rem .3rem;margin:0 1px">gede</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- WATERMARK (real screen 07) ---------- -->
+    <div class="page" id="page-watermark">
+      <div class="toolhead">
+        <div class="lhs"><span class="dot"></span><h2>Remove Watermark</h2></div>
+        <span class="badge">EXPERIMENTAL</span>
+      </div>
+      <div class="tpanel">
+        <div class="label" style="margin-top:0">Choose a video source</div>
+        <div class="label" style="color:var(--gold-400)">From Asset Library</div>
+        <div class="thumbgrid" id="wm-assets">
+          <div class="vthumb sel" onclick="pickThumb('wm-assets',this)"><div class="name">video17764470228</div></div>
+          <div class="vthumb" onclick="pickThumb('wm-assets',this)"><div class="name">video_17764466508</div></div>
+          <div class="vthumb" onclick="pickThumb('wm-assets',this)"><div class="name">video_17764462442</div></div>
+          <div class="vthumb" onclick="pickThumb('wm-assets',this)"><div class="name">video_17764459388</div></div>
+        </div>
+        <div class="label">Posisi tanda</div>
+        <div class="optgrid c4"><div class="opt">Kiri atas</div><div class="opt sel">Kanan atas</div><div class="opt">Kiri bawah</div><div class="opt">Kanan bawah</div></div>
+        <button class="btn btn-gold" style="margin-top:1.1rem" onclick="showToast('Watermark diproses','Estimasi 30 detik untuk hapus watermark.')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M17 3a2.83 2.83 0 0 1 4 4L7 21l-4 1 1-4z"/></svg>
+          Remove Watermark
+        </button>
+      </div>
+    </div>
+
+    <!-- ---------- SILENCE ---------- -->
+    <div class="page" id="page-silence">
+      <div class="toolhead"><div class="lhs"><span class="dot"></span><h2>Silence Removal</h2></div></div>
+      <div class="tpanel">
+        <div class="label" style="margin-top:0">Video</div>
+        <div class="thumbgrid" id="sil-assets">
+          <div class="vthumb sel" onclick="pickThumb('sil-assets',this)"><div class="name">video17764470228</div></div>
+          <div class="vthumb" onclick="pickThumb('sil-assets',this)"><div class="name">video_17764466508</div></div>
+        </div>
+        <div class="field" style="margin-top:1rem"><label>Silence Threshold <span class="val">-35dB</span></label><input type="range" min="-60" max="-10" value="-35"></div>
+        <div class="field"><label>Min Silence Duration <span class="val">0.4s</span></label><input type="range" min="1" max="20" value="4"></div>
+        <button class="btn btn-gold" onclick="showToast('Silence removal dimulai','Jeda hening di bawah threshold otomatis dipotong.')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M11 5L6 9H2v6h4l5 4zM23 9l-6 6m0-6l6 6"/></svg>
+          Remove Silence
+        </button>
+      </div>
+    </div>
+
+    <!-- ---------- B-ROLL ---------- -->
+    <div class="page" id="page-broll">
+      <div class="toolhead"><div class="lhs"><span class="dot"></span><h2>B-Roll Insert</h2></div></div>
+      <div class="tpanel">
+        <div class="label" style="margin-top:0">Video sumber (harus sudah ditranskrip)</div>
+        <div class="thumbgrid" id="broll-assets">
+          <div class="vthumb sel" onclick="pickThumb('broll-assets',this)"><div class="tags"><span class="cc">CC</span></div><div class="name">video17764470228</div></div>
+          <div class="vthumb" style="opacity:.4"><div class="name">video_belum_cc.mp4</div></div>
+        </div>
+        <div class="label">Sumber B-roll</div>
+        <div class="optgrid c2"><div class="opt sel">📚 Asset Library</div><div class="opt">🔍 AI Suggest (Pexels)</div></div>
+        <button class="btn btn-gold" style="margin-top:1rem" onclick="showToast('B-roll dicari','AI mencocokkan b-roll dengan transkrip.')">Insert B-Roll</button>
+      </div>
+    </div>
+
+    <!-- ---------- MY FILES (real screen 05) ---------- -->
+    <div class="page" id="page-myfiles">
+      <div class="masterhead">
+        <div>
+          <div class="mtitle">Biar 2026 Tidak Miskin</div>
+          <div class="msub">MASTER FILE · YOUTUBE</div>
+        </div>
+        <button class="btn btn-ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0l-4-4m4 4l4-4M4 21h16"/></svg>Download Original</button>
+      </div>
+      <div class="player">
+        <div class="playbtn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="scrub"><span>8:06</span><div class="bar"><i></i></div><span>48:27</span></div>
+      </div>
+
+      <div class="label">7 Klip AI · diurut skor ↓</div>
+
+      <div class="cliprow" onclick="openModal('modal-editvideo')">
+        <div class="thumb">🎬<span class="len">0:45</span></div>
+        <div class="body">
+          <div class="top"><span class="t">#1 The 'Chinese' Circle Joke</span><span class="score">9.8<small>/10</small></span></div>
+          <div class="reason">"Yuda Kelling jokes about needing a specific circle to get rich." Hook kuat 3 detik pertama.</div>
+          <div class="rowacts">
+            <button class="miniact primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Edit</button>
+            <button class="miniact" onclick="event.stopPropagation();openModal('modal-publish')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v10m0-10l-4 4m4-4l4 4M4 19h16"/></svg>Export</button>
+          </div>
+        </div>
+      </div>
+      <div class="cliprow" onclick="openModal('modal-editvideo')">
+        <div class="thumb">🎬<span class="len">1:12</span></div>
+        <div class="body">
+          <div class="top"><span class="t">#2 Kenapa Gaji Naik Gak Bikin Kaya</span><span class="score">9.1<small>/10</small></span></div>
+          <div class="reason">Payoff jelas di detik ke-40, cocok buat hook "3 kesalahan finansial".</div>
+          <div class="rowacts">
+            <button class="miniact primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Edit</button>
+            <button class="miniact" onclick="event.stopPropagation();openModal('modal-publish')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v10m0-10l-4 4m4-4l4 4M4 19h16"/></svg>Export</button>
+          </div>
+        </div>
+      </div>
+      <div class="cliprow" onclick="openModal('modal-editvideo')" style="opacity:.6">
+        <div class="thumb">🎬<span class="len">0:52</span></div>
+        <div class="body">
+          <div class="top"><span class="t">#3 Startup yang Gagal Karena Ego</span><span class="score">7.4<small>/10</small></span></div>
+          <div class="reason">Hook lambat, payoff ada tapi butuh potongan lebih rapat.</div>
+          <div class="rowacts">
+            <button class="miniact primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Edit</button>
+            <button class="miniact" onclick="event.stopPropagation();openModal('modal-publish')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v10m0-10l-4 4m4-4l4 4M4 19h16"/></svg>Export</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- ASSETS (real screen 08) ---------- -->
+    <div class="page" id="page-assets">
+      <div class="toolhead">
+        <div><h2 style="font-size:1.15rem">Asset Library</h2><div class="label" style="margin:.2rem 0 0">Manage global assets (Intros, Outros, Overlays) for your clips.</div></div>
+        <button class="btn btn-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 5v14M5 12h14"/></svg>Upload Asset</button>
+      </div>
+      <div class="thumbgrid" style="grid-template-columns:repeat(5,1fr)">
+        <div class="vthumb"><div class="name">broll_card_17764500...</div></div>
+        <div class="vthumb"><div class="tags"><span>AUDIO</span><span class="cc">CC</span></div><div class="name">[DL] video17764...</div></div>
+        <div class="vthumb"><div class="tags"><span>AUDIO</span><span class="cc">CC</span></div><div class="name">video_17764466...</div></div>
+        <div class="vthumb"><div class="tags"><span>AUDIO</span><span class="cc">CC</span></div><div class="name">video_17764462...</div></div>
+        <div class="vthumb"><div class="tags"><span>AUDIO</span><span class="cc">CC</span></div><div class="name">video_17764459...</div></div>
+        <div class="vthumb"><div class="tags"><span>AUDIO</span><span class="cc">CC</span></div><div class="name">video_17764458...</div></div>
+        <div class="vthumb"><div class="tags"><span>AUDIO</span><span class="cc">CC</span></div><div class="name">video_17764431...</div></div>
+        <div class="vthumb"><div class="tags"><span>AUDIO</span><span class="cc">CC</span></div><div class="name">video_17764421...</div></div>
+        <div class="vthumb"><div class="tags"><span>AUDIO</span><span class="cc">CC</span></div><div class="name">video_17764398...</div></div>
+        <div class="vthumb"><div class="tags"><span>AUDIO</span></div><div class="name">intro_stinger.mp4</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ MODAL: Settings (real screen 09) ============ -->
+<div class="overlay" id="modal-settings">
+  <div class="modal mid">
+    <div class="modhead">
+      <div><h2>⚡ Settings</h2></div>
+      <button class="xbtn" onclick="closeModal('modal-settings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="modbody">
+      <div class="label" style="margin-top:0">AI Model</div>
+      <div class="aimodelgrid">
+        <div class="aimodel sel" onclick="pickModel(this)"><div class="ic">✨</div><b>Gemini</b><small>Fast &amp; Free</small></div>
+        <div class="aimodel" onclick="pickModel(this)"><div class="ic">🤖</div><b>GPT-4o</b><small>Best Quality</small></div>
+        <div class="aimodel" onclick="pickModel(this)"><div class="ic">🎭</div><b>Claude</b><small>Long Context</small></div>
+        <div class="aimodel" onclick="pickModel(this)"><div class="ic">✕</div><b>Grok</b><small>xAI · Elon's AI</small></div>
+        <div class="aimodel" onclick="pickModel(this)"><div class="ic">🔀</div><b>OpenRouter</b><small>Any Model</small></div>
+        <div class="aimodel" onclick="pickModel(this)"><div class="ic">🌊</div><b>Mistral</b><small>Open Alt</small></div>
+        <div class="aimodel" onclick="pickModel(this)"><div class="ic">🧩</div><b>DeepSeek</b><small>Reasoning</small></div>
+        <div class="aimodel" onclick="pickModel(this)"><div class="ic">🦙</div><b>Local AI</b><small>Ollama · Gratis · v2.6</small></div>
+      </div>
+      <div class="label">Gemini API Key</div>
+      <a href="#" style="font-size:.72rem;color:var(--gold-400);font-weight:700">🔗 Get your API key at Google AI Studio (Free)</a>
+      <div class="keyrow"><input class="textin" type="text" placeholder="sk-..."><button class="btn btn-ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M20 6L9 17l-5-5"/></svg>Verify</button></div>
+    </div>
+    <div class="modfoot">
+      <span class="savedhint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M20 6L9 17l-5-5"/></svg>Changes save automatically</span>
+      <button class="btn btn-ghost" onclick="closeModal('modal-settings')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: Edit Video (Editor v2) ============ -->
+<div class="overlay" id="modal-editvideo">
+  <div class="modal wide">
+    <div class="modhead">
+      <div><h2>Edit Video</h2><p>Clip #1: The 'Chinese' Circle Joke</p></div>
+      <button class="xbtn" onclick="closeModal('modal-editvideo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="modbody">
+      <div class="tabbar" id="ev-tabs">
+        <button class="on" onclick="evTab(0,this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>Hook Overlay</button>
+        <button onclick="evTab(1,this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 10h4M6 14h8"/></svg>Subtitle</button>
+        <button onclick="evTab(2,this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a6 9 0 0 1 0 18 6 9 0 0 1 0-18"/></svg>Video Style</button>
+      </div>
+      <div class="evgrid">
+        <div>
+          <div class="ev-panel" id="ev-0">
+            <div class="field"><label>Hook Text</label>
+              <div style="display:flex;gap:.5rem"><input class="textin" style="flex:1" value="The Trap Of External Blame"><button class="btn btn-ghost">✨ Auto</button></div>
+            </div>
+            <div class="field"><label>Quick Presets</label>
+              <div class="chiprow">
+                <span class="chip" style="color:#3FB27F">Neon Green</span><span class="chip sel">Bold Gold</span><span class="chip">Clean White</span><span class="chip" style="color:#D8593B">Fire Red</span><span class="chip" style="color:#3FA9FF">Ocean Blue</span>
+              </div>
+            </div>
+            <div class="label" style="margin-top:0">FFmpeg Style Controls</div>
+            <div class="optgrid c2">
+              <div class="field"><label>Text Color</label><div class="colorrow"><div class="swatch" style="background:#000"></div><input type="text" value="#000000"></div></div>
+              <div class="field"><label>Background</label><div class="colorrow"><div class="swatch" style="background:#FFD700"></div><input type="text" value="#FFD700"></div></div>
+            </div>
+            <div class="field"><label>Font Size <span class="val">72px</span></label><input type="range" min="24" max="120" value="72"></div>
+            <div class="field"><label>Alignment</label><div class="optgrid c3"><div class="opt">Left</div><div class="opt sel">Center</div><div class="opt">Right</div></div></div>
+          </div>
+          <div class="ev-panel" id="ev-1" style="display:none">
+            <div class="field"><label>Gaya karaoke</label><div class="optgrid c3"><div class="opt sel">Kata per-kata</div><div class="opt">Baris penuh</div><div class="opt">Tanpa highlight</div></div></div>
+            <div class="field"><label>Warna highlight</label><div class="colorrow"><div class="swatch" style="background:#3FA9FF"></div><input type="text" value="#3FA9FF"></div></div>
+            <div class="field"><label>Posisi Y <span class="val">80%</span></label><input type="range" min="0" max="100" value="80"></div>
+          </div>
+          <div class="ev-panel" id="ev-2" style="display:none">
+            <div class="field"><label>Background style</label><div class="optgrid c3"><div class="opt sel">Blur (Fast)</div><div class="opt">Blur (Motion)</div><div class="opt">Zoom Crop</div></div></div>
+            <div class="field"><label>Face-track crop <span class="val">v2.6 overhaul</span></label><input type="range" min="0" max="100" value="100"></div>
+          </div>
+        </div>
+        <div class="previewbox">
+          <div class="pvhead"><span>Live Preview</span><span>9:16</span></div>
+          <div class="pvframe"><div class="face"></div>
+            <div class="hookoverlay" style="top:12%;background:#FFD700;color:#000">THE TRAP OF EXTERNAL BLAME</div>
+            <div class="pvcaption">kendali hidup kita</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modfoot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-editvideo')">Cancel</button>
+      <button class="btn btn-gold" onclick="closeModal('modal-editvideo');showToast('Re-render dimulai','Klip akan diperbarui di My Files.')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M20 6L9 17l-5-5"/></svg>Apply &amp; Re-render
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: Publish/Export ============ -->
+<div class="overlay" id="modal-publish">
+  <div class="modal mid">
+    <div class="modhead">
+      <div><h2>Export &amp; Publish</h2><p>The 'Chinese' Circle Joke · 0:45 · 9:16</p></div>
+      <button class="xbtn" onclick="closeModal('modal-publish')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="modbody">
+      <div class="label" style="margin-top:0">Kualitas export</div>
+      <div class="optgrid c4" id="exp-grid"><div class="opt">480p</div><div class="opt sel" onclick="pick('exp-grid',this)">720p</div><div class="opt" onclick="pick('exp-grid',this)">1080p</div><div class="opt" onclick="pick('exp-grid',this)">4K</div></div>
+      <div class="label">Caption &amp; hashtag (AI)</div>
+      <textarea class="textin" rows="3">Kadang kita nyalahin keadaan luar, padahal masalahnya di kebiasaan sendiri 🔑 #keuangan #mindset #2026</textarea>
+    </div>
+    <div class="modfoot">
+      <button class="btn btn-ghost" onclick="closeModal('modal-publish')">Batal</button>
+      <button class="btn btn-gold" onclick="closeModal('modal-publish');showToast('Export selesai','clip-01-chinese-circle-joke.mp4 tersimpan.')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 5v10m0-10l-4 4m4-4l4 4M4 19h16"/></svg>Export Klip
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: Welcome Tour (real screen 01, cream/light) ============ -->
+<div class="overlay" id="modal-tour">
+  <div class="tourcard">
+    <button class="xbtn" onclick="closeModal('modal-tour')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <span class="tourpill">Welcome 🎉</span>
+    <h3>Thank You for Your Purchase!</h3>
+    <p>Qlipper is a one-click viral clip factory. Paste a video link (or upload your own), and AI does the rest — download, transcribe, find the best moments, and export ready-to-post clips.</p>
+    <div class="touricons">
+      <div class="ti"><div class="box">🔗</div>Link</div>
+      <div class="ti"><div class="box">⬇️</div>Download</div>
+      <div class="ti"><div class="box">🤖</div>AI</div>
+      <div class="ti"><div class="box">✂️</div>Clips</div>
+      <div class="ti"><div class="box">📱</div>Post</div>
+    </div>
+    <div class="tourfoot">
+      <div class="tourdots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div style="display:flex;align-items:center;gap:1rem">
+        <span class="tourskip" onclick="closeModal('modal-tour')">Skip tour</span>
+        <button class="tournext" onclick="closeModal('modal-tour')">Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Log Stream pill (present on every real screen) ============ -->
+<div class="logpill" id="logpill" onclick="toggleLog()"><span class="logdot"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 17l6-6-6-6M12 19h8"/></svg>Log Stream</div>
+<div class="logdrawer" id="logdrawer">
+  <div><span class="ok">[OK]</span> preflight.js — yt-dlp v2026.08.12 ready</div>
+  <div><span class="ok">[OK]</span> ffmpeg binary found (bundled)</div>
+  <div><span class="ok">[OK]</span> Ollama detected — 3 models installed</div>
+  <div><span class="warn">[WARN]</span> Gemini gemini-flash-latest overloaded, retrying gemini-3.0-flash</div>
+  <div><span class="ok">[OK]</span> license verified — QLIP-2N4K91XZ</div>
+  <div>[INFO] server.js listening on :3001</div>
+  <div>[INFO] job queue idle</div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+  <div><div class="tt" id="toast-title">Selesai</div><div class="td" id="toast-desc">—</div></div>
+</div>
+
+<div class="hint">🖱 <b>Klik-klik aja</b> — prototipe visual, chrome &amp; layout dari 11 screenshot UI asli v2.3 + fitur v2.6 dari source (Local AI, jumlah klip, bahasa). Nol backend beneran.</div>
+
+<script>
+function enterApp(){
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').classList.add('show');
+  openModal('modal-tour');
+}
+function goPage(id, el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.tabbtn').forEach(b=>b.classList.remove('on'));
+  if(el) el.classList.add('on');
+  else { const b=document.querySelector('.tabbtn[data-page="'+id+'"]'); if(b) b.classList.add('on'); }
+  document.querySelector('.main').scrollTo(0,0);
+}
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.overlay').forEach(ov=>{
+  ov.addEventListener('click', e=>{ if(e.target===ov) ov.classList.remove('open'); });
+});
+function pick(groupId, el){
+  document.getElementById(groupId).querySelectorAll('.opt,.stylecard').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function pickThumb(groupId, el){
+  document.getElementById(groupId).querySelectorAll('.vthumb').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function pickModel(el){
+  el.parentElement.querySelectorAll('.aimodel').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function evTab(i, el){
+  document.querySelectorAll('#ev-tabs button').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.ev-panel').forEach((p,idx)=>p.style.display = idx===i ? 'block':'none');
+}
+function toggleLog(){ document.getElementById('logdrawer').classList.toggle('open'); }
+let toastTimer;
+function showToast(title, desc){
+  document.getElementById('toast-title').textContent = title;
+  document.getElementById('toast-desc').textContent = desc;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 3800);
+}
+function startProcessing(){
+  goPage('processing');
+  let pct = 62;
+  const bar = document.getElementById('analyze-bar');
+  const lbl = document.getElementById('analyze-pct');
+  clearInterval(window._procInt);
+  window._procInt = setInterval(()=>{
+    pct += 6;
+    if(pct >= 100){
+      pct = 100;
+      clearInterval(window._procInt);
+      const ph = document.getElementById('phase-analyze');
+      ph.classList.remove('active'); ph.classList.add('done');
+      ph.querySelector('.pnum').textContent='✓';
+      const rd = document.getElementById('phase-render');
+      rd.classList.add('active');
+      rd.querySelector('.pt').innerHTML = 'Render klip <span class="pct">rendering...</span>';
+      setTimeout(finishProcessing, 1400);
+    }
+    bar.style.width = pct+'%';
+    lbl.textContent = pct+'%';
+  }, 350);
+}
+function finishProcessing(){
+  clearInterval(window._procInt);
+  goPage('myfiles');
+  showToast('7 klip siap!', 'AI selesai menganalisis — cek My Files, diurut skor viral.');
+}
+</script>
+</body>
+</html>

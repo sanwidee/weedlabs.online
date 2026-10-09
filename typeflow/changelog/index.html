@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TypeFlow — Changelog</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; }
+    body {
+      background: #0B0812; color: #E7E3F3;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.65; padding: 0 20px 90px;
+    }
+    a { color: #C4B5FD; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 680px; margin: 0 auto; }
+    nav { display: flex; align-items: center; gap: 10px; padding: 22px 0 46px; }
+    nav img { width: 26px; height: 26px; border-radius: 6px; }
+    nav .brand { font-weight: 700; color: #E7E3F3; }
+    nav .back { margin-left: auto; font-size: 14px; }
+    h1 { font-size: 2rem; letter-spacing: -0.02em; }
+    .sub { color: #9A93AE; margin: 8px 0 44px; }
+    .release { border-left: 2px solid #3D3355; padding: 2px 0 6px 22px; margin-bottom: 40px; position: relative; }
+    .release::before {
+      content: ""; position: absolute; left: -6px; top: 8px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #8B5CF6; box-shadow: 0 0 12px rgba(139, 92, 246, .8);
+    }
+    .release h2 { font-size: 1.15rem; }
+    .release .meta { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: #9A93AE; margin: 2px 0 14px; }
+    .release ul { padding-left: 20px; }
+    .release li { margin-bottom: 8px; font-size: 14.5px; }
+    .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; border-radius: 999px; padding: 1px 8px; margin-right: 6px; vertical-align: middle; }
+    .t-new { background: rgba(139, 92, 246, .18); color: #C4B5FD; }
+    .t-fix { background: rgba(96, 165, 250, .15); color: #93C5FD; }
+    kbd { background: #1D1730; border: 1px solid #3D3355; border-radius: 5px; padding: 1px 6px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+    code { background: #1D1730; border-radius: 5px; padding: 1px 6px; font-family: ui-monospace, Menlo, monospace; font-size: 13px; color: #C4B5FD; }
+    footer { color: #9A93AE; font-size: 13px; margin-top: 60px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <img src="../assets/icon.png" alt="TypeFlow" />
+      <span class="brand">TypeFlow</span>
+      <a class="back" href="../">← Back to TypeFlow</a>
+    </nav>
+
+    <h1>Changelog</h1>
+    <p class="sub">Everything that ships, in order. Local-first stays the default — cloud is always opt-in.</p>
+
+    <div class="release">
+      <h2>0.2.0 — Cloud boosters</h2>
+      <div class="meta">29 Aug 2026</div>
+      <ul>
+        <li><span class="tag t-new">New</span><strong>ElevenLabs Scribe engine</strong> — pick <em>Cloud · ElevenLabs Scribe</em> in the Model menu for dramatically better Bahasa Indonesia transcription than the local small model. Bring your own key in <code>~/.typeflow.json</code>; falls back to local automatically if the network or key is missing.</li>
+        <li><span class="tag t-new">New</span><strong>"AI Prompt (EN)" tone</strong> — dictate a ramble in Indonesian, English, or a mix, and get back one structured English prompt ready to paste into an AI tool. It resolves mid-sentence corrections ("eh salah, maksudnya…") and preserves product names, paths and numbers exactly.</li>
+        <li><span class="tag t-new">New</span><strong>Cloud post-processing</strong> — set <code>"postprocess": "cloud"</code> to route all tone presets through a frontier model via OpenRouter instead of the local Qwen. The prompt tone always uses cloud when a key is present.</li>
+        <li><span class="tag t-fix">Fix</span>Sanity window widened for structured outputs so legitimate expansions (prompt mode) aren't rejected as hallucinations.</li>
+        <li>Everything fails soft: no key, no network, or a bad response returns your untouched transcript — you never paste garbage.</li>
+      </ul>
+    </div>
+
+    <div class="release">
+      <h2>0.1.0 — First release</h2>
+      <div class="meta">Aug 2026</div>
+      <ul>
+        <li>Global hotkey voice typing for macOS (<kbd>⌘</kbd> <kbd>\</kbd>, rebindable) — record from any app, transcript lands on the clipboard.</li>
+        <li>Local Whisper via <code>faster-whisper</code>: small / medium / large-v3-turbo / large-v3, all offline after first download.</li>
+        <li>English &amp; Bahasa Indonesia in the UI; code-switching works.</li>
+        <li>Optional on-device polishing (Qwen 2.5): fluent, friendly, professional, translate ID↔EN, custom prompt.</li>
+        <li>Menu-bar app with live level meter, mic picker, mic test, floating overlay.</li>
+        <li>MIT licensed, no telemetry, no account.</li>
+      </ul>
+    </div>
+
+    <footer>Part of the <a href="https://weedlabs.online">Weedlabs</a> suite · <a href="https://github.com/sanwidee/typeflow">Source on GitHub</a></footer>
+  </div>
+</body>
+</html>
