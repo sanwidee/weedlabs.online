@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Weed Labs — One-man lab shipping AI products</title>
+    <meta name="description" content="Walk around Weed Labs: a block world where every building is a product. Qlipper, Vicca, Pidgo, LamarPintar, Wads and free tools, built by one person from Indonesia.">
+    <meta name="theme-color" content="#bfe9f5">
+    <link rel="canonical" href="https://weedlabs.online/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://weedlabs.online/">
+    <meta property="og:site_name" content="Weed Labs">
+    <meta property="og:title" content="Weed Labs — walk around the lab">
+    <meta property="og:description" content="A block world where every building is a product. Built by one person from Indonesia.">
+    <meta property="og:image" content="https://weedlabs.online/assets/og-cover.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://weedlabs.online/assets/og-cover.png">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d9373'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' font-size='38' font-weight='800' fill='%2300c896'%3EL%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --mint: #d5f0ea;
+            --teal: #0d9373;
+            --teal-dark: #07705a;
+            --accent: #00c896;
+            --ink: #1a3a32;
+            --muted: #3a6459;
+            --panel: rgba(255, 255, 255, 0.92);
+            --panel-border: rgba(13, 147, 115, 0.22);
+            --shadow: 0 10px 30px rgba(10, 60, 48, 0.18);
+            --sky: #bfe9f5;
+            --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+            --font-mono: 'DM Mono', ui-monospace, monospace;
+        }
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            overscroll-behavior: none;
+            background: var(--sky);
+            color: var(--ink);
+            font-family: var(--font-sans);
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; outline: none; }
+        a { color: inherit; }
+        .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+        /* HUD */
+        .hud { position: fixed; z-index: 5; pointer-events: none; }
+        .hud > * { pointer-events: auto; }
+        .hud-tl { top: max(14px, env(safe-area-inset-top)); left: 14px; display: flex; gap: 8px; align-items: center; }
+        .hud-tr { top: max(14px, env(safe-area-inset-top)); right: 14px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .brand {
+            font-weight: 800; letter-spacing: -0.03em; font-size: 18px; line-height: 1;
+            padding: 9px 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--panel-border);
+            box-shadow: var(--shadow); text-decoration: none; color: var(--teal-dark);
+        }
+        .brand b { color: var(--accent); font-weight: 800; }
+        .btn-chip {
+            font: 500 12px/1 var(--font-mono); letter-spacing: 0.04em; color: var(--teal-dark);
+            padding: 10px 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--panel-border);
+            box-shadow: var(--shadow); text-decoration: none; cursor: pointer;
+        }
+        .btn-chip:hover { border-color: var(--teal); }
+        #minimap { width: 132px; height: 104px; border-radius: 12px; border: 1px solid var(--panel-border); box-shadow: var(--shadow); background: var(--panel); image-rendering: pixelated; }
+
+        /* Floating building signs */
+        #labels { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+        .sign {
+            position: absolute; left: 0; top: 0; pointer-events: auto; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 1px;
+            padding: 5px 10px 6px; border-radius: 10px; white-space: nowrap;
+            background: var(--panel); border: 1px solid var(--panel-border); box-shadow: 0 6px 16px rgba(10, 60, 48, 0.16);
+            transition: opacity 0.25s ease; font: inherit; color: inherit;
+        }
+        .sign::after { content: ''; position: absolute; bottom: -5px; left: 50%; width: 8px; height: 8px; background: #fff; border-right: 1px solid var(--panel-border); border-bottom: 1px solid var(--panel-border); transform: translateX(-50%) rotate(45deg); }
+        .sign b { font-size: 12px; font-weight: 800; line-height: 1.2; }
+        .sign span { font: 500 10.5px/1.2 var(--font-mono); color: var(--teal); }
+        .sign.far { opacity: 0; pointer-events: none; }
+
+        /* Product card (bottom sheet) */
+        #card {
+            position: fixed; z-index: 6; left: 50%; bottom: max(16px, env(safe-area-inset-bottom));
+            width: min(440px, calc(100% - 24px)); transform: translate(-50%, 140%);
+            background: var(--panel); border: 1px solid var(--panel-border); border-radius: 18px; box-shadow: var(--shadow);
+            padding: 16px 16px 14px; transition: transform 0.32s cubic-bezier(.2,.9,.3,1.2);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        }
+        #card.open { transform: translate(-50%, 0); }
+        .card-top { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+        .card-swatch { width: 40px; height: 40px; border-radius: 10px; flex: none; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.18); image-rendering: pixelated; }
+        .card-title { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.15; }
+        .card-domain { font: 500 12px/1.3 var(--font-mono); color: var(--teal); }
+        .card-badge { margin-left: auto; align-self: flex-start; font: 500 10px/1 var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; padding: 5px 7px; border-radius: 6px; background: var(--mint); color: var(--teal-dark); }
+        .card-desc { font-size: 14px; line-height: 1.5; color: var(--muted); margin-bottom: 12px; }
+        .card-actions { display: flex; gap: 8px; align-items: center; }
+        .card-go {
+            flex: 1; text-align: center; text-decoration: none; font-weight: 700; font-size: 14px;
+            padding: 11px 14px; border-radius: 12px; background: var(--teal); color: #fff; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.18);
+        }
+        .card-go:hover { background: var(--teal-dark); }
+        .card-close { width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--panel-border); background: #fff; color: var(--muted); font-size: 18px; cursor: pointer; }
+        .card-key { font: 500 11px/1 var(--font-mono); color: var(--muted); }
+
+        /* Joystick */
+        #joy { position: fixed; z-index: 4; left: 0; top: 0; width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 50%;
+            background: rgba(255,255,255,0.28); border: 2px solid rgba(255,255,255,0.75); box-shadow: 0 6px 20px rgba(10,60,48,0.2);
+            pointer-events: none; opacity: 0; transition: opacity 0.12s ease; }
+        #joy.on { opacity: 1; }
+        #joy i { position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; margin: -24px 0 0 -24px; border-radius: 50%;
+            background: rgba(255,255,255,0.95); box-shadow: 0 3px 10px rgba(10,60,48,0.25), inset 0 -3px 0 rgba(13,147,115,0.35); }
+
+        /* Intro */
+        #intro { position: fixed; inset: 0; z-index: 8; display: grid; place-items: center; padding: 20px;
+            background: radial-gradient(ellipse 60% 70% at 50% 50%, rgba(213,240,234,0.88), rgba(213,240,234,0.35)); transition: opacity 0.4s ease; }
+        #intro.hide { opacity: 0; pointer-events: none; }
+        .intro-box { width: min(420px, 100%); text-align: center; }
+        .logo { font-weight: 800; letter-spacing: -0.03em; line-height: 0.85; margin-bottom: 14px; }
+        .logo span { display: block; }
+        .logo .l1 { font-size: clamp(46px, 13vw, 68px); color: var(--teal-dark); text-align: left; padding-left: 12%; }
+        .logo .l2 { font-size: clamp(56px, 16vw, 84px); color: var(--accent); }
+        .logo .l3 { font-size: clamp(22px, 6vw, 30px); color: var(--teal); text-align: right; padding-right: 12%; font-weight: 700; }
+        .tagline { font-size: 15px; color: var(--muted); margin-bottom: 22px; }
+        .controls { display: inline-flex; gap: 10px; align-items: center; font: 500 12px/1.4 var(--font-mono); color: var(--teal-dark);
+            background: rgba(255,255,255,0.7); border: 1px solid var(--panel-border); border-radius: 12px; padding: 10px 14px; margin-bottom: 18px; text-align: left; }
+        .keys { display: grid; grid-template-columns: repeat(3, 22px); gap: 3px; }
+        .keys kbd { display: grid; place-items: center; height: 22px; border-radius: 5px; background: #fff; border: 1px solid var(--panel-border); box-shadow: inset 0 -2px 0 rgba(13,147,115,0.25); font: 600 10px var(--font-mono); }
+        .keys kbd:first-child { grid-column: 2; }
+        .touch-only, body.touch .desk-only { display: none; }
+        body.touch .touch-only { display: inline; }
+        .start { display: block; width: 100%; padding: 15px 18px; border: 0; border-radius: 14px; background: var(--teal); color: #fff;
+            font: 800 16px var(--font-sans); cursor: pointer; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2), var(--shadow); margin-bottom: 12px; }
+        .start:hover { background: var(--teal-dark); }
+        .start:disabled { opacity: 0.6; cursor: progress; }
+        .alt { font-size: 13px; color: var(--muted); }
+        .alt a { color: var(--teal-dark); font-weight: 700; }
+
+        #toast { position: fixed; z-index: 5; left: 50%; top: max(70px, calc(env(safe-area-inset-top) + 60px)); transform: translate(-50%, -8px);
+            font: 500 12px/1.3 var(--font-mono); color: var(--teal-dark); background: var(--panel); border: 1px solid var(--panel-border);
+            padding: 9px 13px; border-radius: 12px; box-shadow: var(--shadow); opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; pointer-events: none; text-align: center; max-width: calc(100% - 24px); }
+        #toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+        body.no-gl #game, body.no-gl .hud, body.no-gl #intro { display: none; }
+        #nogl { display: none; position: fixed; inset: 0; place-items: center; padding: 24px; text-align: center; background: var(--mint); }
+        body.no-gl #nogl { display: grid; }
+
+        @media (max-width: 640px) {
+            #minimap { width: 104px; height: 82px; }
+            .brand { font-size: 16px; padding: 8px 10px; }
+            .sign { padding: 4px 8px 5px; }
+            .sign b { display: none; }
+            .sign span { font-size: 10.5px; }
+            .sign--named b { display: block; }
+            .sign--named span { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="game" tabindex="0" aria-label="Weed Labs block world. Use the list view link for a text version."></canvas>
+    <div id="labels" aria-hidden="true"></div>
+
+    <div class="hud hud-tl">
+        <a class="brand" href="/classic/" title="List view">weed<b>Labs</b></a>
+    </div>
+    <div class="hud hud-tr">
+        <canvas id="minimap" width="132" height="104" aria-hidden="true"></canvas>
+        <a class="btn-chip" href="/classic/">List view</a>
+        <button class="btn-chip" id="help" type="button" aria-label="How to play">How to move</button>
+    </div>
+
+    <div id="joy" aria-hidden="true"><i></i></div>
+    <div id="toast" role="status"></div>
+
+    <section id="card" aria-live="polite" aria-hidden="true">
+        <div class="card-top">
+            <div class="card-swatch"></div>
+            <div>
+                <div class="card-title"></div>
+                <div class="card-domain"></div>
+            </div>
+            <span class="card-badge"></span>
+        </div>
+        <p class="card-desc"></p>
+        <div class="card-actions">
+            <a class="card-go" href="#" target="_blank" rel="noopener">Open</a>
+            <button class="card-close" type="button" aria-label="Close">×</button>
+        </div>
+    </section>
+
+    <div id="intro">
+        <div class="intro-box">
+            <h1 class="logo"><span class="l1">weed</span><span class="l2">Labs</span><span class="l3">.online</span></h1>
+            <p class="tagline">One-man lab shipping AI products. Built from Indonesia.<br>Every building here is a product. Walk in and look around.</p>
+            <div class="controls">
+                <span class="desk-only keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span>
+                <span class="desk-only">Walk with WASD or arrow keys,<br>or click and drag anywhere.</span>
+                <span class="touch-only">Touch anywhere and drag<br>to walk. Let go to stop.</span>
+            </div>
+            <button class="start" id="start" type="button" disabled>Loading the world…</button>
+            <p class="alt">Prefer a plain page? <a href="/classic/">Open list view</a></p>
+        </div>
+    </div>
+
+    <div id="nogl">
+        <div>
+            <p class="tagline">This browser can't show the 3D world.</p>
+            <a class="start" href="/classic/" style="text-decoration:none">Open list view</a>
+        </div>
+    </div>
+
+    <!-- Text version for search engines and screen readers -->
+    <nav class="sr-only" aria-label="Weed Labs products">
+        <h2>Weed Labs: one-man lab shipping AI products, built from Indonesia</h2>
+        <ul>
+            <li><a href="https://qlipper.id">Qlipper AI</a>: turns long podcasts into shorts on your own GPU.</li>
+            <li><a href="https://vicca.id">Vicca</a>: self-hosted AI bot answering Instagram and WhatsApp DMs.</li>
+            <li><a href="https://pidgoapp.online">Pidgo</a>: AI landing page generator with the tracking pixel already wired in.</li>
+            <li><a href="https://lamarpintar.online">LamarPintar</a>: rewrites your CV for each job posting so it clears the ATS filter.</li>
+            <li><a href="https://wads.weedlabs.online">Wads</a>: creative companion for video ads.</li>
+            <li><a href="/typeflow/">TypeFlow</a>, <a href="/public-project/photoframe/">PhotoFrame</a>, <a href="https://github.com/sanwidee/adb-mcp">Photoshop × Claude</a>: free tools.</li>
+            <li><a href="/classic/">List view of everything</a></li>
+        </ul>
+    </nav>
+
+    <script type="module" src="/assets/world/game.js?v=20261009b"></script>
+    <script src="https://weedlabs.online/analytics/t.js" data-source="weedlabs-online"></script>
+</body>
+</html>
