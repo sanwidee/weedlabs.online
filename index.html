@@ -578,6 +578,129 @@
             a.card:hover, a.card:focus-visible { transform: none; }
             .card, .row { transition: none; }
         }
+
+        /* ---------- Voxel world (scroll-built) ---------- */
+        html, body { overflow-x: clip; }
+        .world {
+            position: relative;
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            height: 320vh;
+            margin-top: 24px;
+            margin-bottom: 56px;
+        }
+        .world-stage {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            height: 100svh;
+            overflow: hidden;
+        }
+        .world-stage::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 70% 60% at 50% 55%, var(--glow) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .world canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+        .world-hud {
+            position: absolute;
+            top: 20px; left: 24px; right: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .world-pct { color: var(--teal-dark); font-weight: 500; font-variant-numeric: tabular-nums; }
+        .world-beat {
+            position: absolute;
+            left: 50%;
+            bottom: 4vh;
+            transform: translateX(-50%);
+            width: min(560px, calc(100% - 32px));
+            text-align: center;
+            font-size: clamp(15px, 2vw, 19px);
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: var(--text);
+            padding: 12px 18px;
+            border-radius: 14px;
+            background: var(--bg);
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .world-beat.in { animation: worldBeat 0.5s ease both; }
+        @keyframes worldBeat { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        .world-labels { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+        .world-label {
+            position: absolute;
+            left: 0; top: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            padding: 6px 10px 7px;
+            border-radius: 10px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 6px 18px var(--card-shadow-hover);
+            text-decoration: none;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .world-label.on { opacity: 1; pointer-events: auto; }
+        .world-label::after {
+            content: '';
+            position: absolute;
+            bottom: -5px; left: 50%;
+            width: 8px; height: 8px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--card-border);
+            border-bottom: 1px solid var(--card-border);
+            transform: translateX(-50%) rotate(45deg);
+        }
+        .world-label em { font-style: normal; color: var(--text-dim); }
+        .world-label b { font-size: 13px; font-weight: 800; color: var(--text); line-height: 1.2; }
+        .world-label span { font-family: var(--font-mono); font-size: 11px; color: var(--teal); line-height: 1.2; }
+        .world-label:hover, .world-label:focus-visible { border-color: var(--teal); outline: none; }
+        .world-label--hq b { color: var(--teal-dark); }
+        .world-hint {
+            position: absolute;
+            left: 50%; top: 52px;
+            transform: translateX(-50%);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .world--moving .world-hint { opacity: 0; }
+        .world-hint { transition: opacity 0.3s ease; }
+        .world--off { display: none; }
+        .world--static { height: auto; }
+        .world--static .world-stage { position: relative; height: min(100vh, 760px); }
+        .world--static .world-hint { display: none; }
+        @media (max-width: 640px) {
+            .world { height: 300vh; margin-top: 8px; }
+            .world-beat { bottom: 12vh; }
+            .world-hud { top: 14px; left: 16px; right: 16px; font-size: 10px; }
+            .world-label { padding: 4px 7px 5px; }
+            .world-label b { display: none; }
+            .world-label span { font-size: 11px; font-weight: 500; }
+            .world-label em { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -591,6 +714,17 @@
                 <span class="logo-line-3">.online</span>
             </h1>
             <p class="tagline">One-man lab shipping AI products. Built from Indonesia.</p>
+        </section>
+
+        <!-- Voxel world: built as you scroll. Product links below stay the accessible path. -->
+        <section class="world" id="world" aria-label="Weed Labs as a block world: HQ in the middle, one office per product">
+            <div class="world-stage">
+                <canvas aria-hidden="true"></canvas>
+                <div class="world-labels"></div>
+                <div class="world-hud" aria-hidden="true"><span>Weed Labs · build log</span><span>Build <span class="world-pct">000%</span></span></div>
+                <div class="world-hint" aria-hidden="true">scroll to build ↓</div>
+                <p class="world-beat" aria-live="off">Everything here started as one block.</p>
+            </div>
         </section>
 
         <div class="proof">
@@ -622,7 +756,7 @@
         </div>
 
         <!-- Products -->
-        <section class="section">
+        <section class="section" id="products">
             <div class="section-head">
                 <h2 class="section-title">Products</h2>
                 <span class="section-note">paid, in production</span>
@@ -809,6 +943,7 @@
             <p class="footer-copy">&copy; 2026 Weed Labs</p>
         </footer>
     </div>
+    <script type="module" src="/assets/world/world.js?v=20261009"></script>
     <script src="https://weedlabs.online/analytics/t.js" data-source="weedlabs-online"></script>
 </body>
 </html>
