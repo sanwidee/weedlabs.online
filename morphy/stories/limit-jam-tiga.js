@@ -1,0 +1,36 @@
+// #2 "Limit Jam 3 Sore": one prompt too many at 3 am, the limit hits one line before the fix,
+// San crawls to his ex (ChatGPT), and Claude comes back at 15.00 smelling someone else on the code.
+const DESK = [0.05, 0.775, 0.6];
+export default {
+  id: 'limit-jam-tiga',
+  title: 'Limit Jam 3 Sore',
+  hook: 0.25,
+  openShot: 'sanClose',
+  endHold: 4.2,
+  endLine: 'Komen <b>“VIBE”</b> kalau pernah selingkuh ke AI lain.',
+  clock: (t, cur) => (cur && ['c2'].includes(cur.id) ? '15.00' : cur && cur.id === 's4' && t > cur.end + 0.3 ? '15.00' : '02.58'),
+  lines: [
+    { id: 's1', who: 'san', text: 'Satu prompt lagi, abis itu tidur.', shot: 'sanClose', pre: 0, post: 0.35,
+      fx: [{ at: 0, screen: ['V', 'clock', 0.01, { text: '02.58', sub: 'satu prompt lagi' }] }, { at: 0, expr: ['san', 'tired'] }, { at: 0.15, sfx: 'typing', gain: 0.8 }] },
+    { id: 'c1', who: 'claude', text: 'Bug-nya ketemu. Tinggal satu baris lag—', shot: 'claudeClose', post: 1.2,
+      fx: [{ at: 0, expr: ['claude', 'happy'] }, { at: 0, pose: ['claude', 'cheer'] }, { at: 0, sfx: 'sparkle' },
+           { atEnd: -0.1, screen: ['L', 'limit', 0.35] }, { atEnd: -0.1, screen: ['R', 'limit', 0.35] }, { atEnd: -0.1, sfx: 'alert', gain: 1.2 },
+           { atEnd: -0.05, expr: ['claude', 'dim'] }, { atEnd: -0.05, pose: ['claude', 'idle'] }, { atEnd: -0.05, light: 0.75 }, { atEnd: -0.05, shake: 0.5 }] },
+    { id: 's2', who: 'san', text: 'NGGAK. SEKARANG. TINGGAL SATU BARIS.', shot: 'monitors', pre: 0.45, post: 1.0,
+      fx: [{ at: 0, pose: ['san', 'shakeMonitor'] }, { at: 0, expr: ['san', 'angry'] }, { at: 0, shake: 0.7, shakeDur: 1.6 }, { at: 0.05, sfx: 'thud' }, { at: 0.5, sfx: 'thud', gain: 0.7 }] },
+    { id: 's3', who: 'san', text: 'Halo… kamu masih bisa bantu?', shot: 'gptClose', pre: 0.4, post: 0.25, blend: 0.6,
+      fx: [{ at: -0.2, pose: ['san', 'guilty'] }, { at: -0.2, expr: ['san', 'tired'] }, { at: 0.1, show: 'gpt' }, { at: 0.1, squash: 'gpt' }, { at: 0.1, sfx: 'sparkle', gain: 0.8 },
+           { at: 0.1, move: ['gpt', [-0.35, 0.72, 1.75], 0.01] }, { at: 0.4, pose: ['gpt', 'wave'] }] },
+    { id: 'g1', who: 'gpt', text: 'Selalu ada buat kamu. Ini 400 baris baru.', shot: 'gptClose', post: 1.6, push: 0.12,
+      fx: [{ at: 0, expr: ['gpt', 'happy'] }, { at: 0, pose: ['gpt', 'offer'] }, { atEnd: -0.6, screen: ['R', 'codeFlood', 2.2] }, { atEnd: -0.6, sfx: 'whoosh' },
+           { atEnd: -0.5, prop: ['codePile', true, { pos: DESK }] }, { atEnd: -0.4, sfx: 'typing' }] },
+    { id: 's4', who: 'san', text: 'Gue cuma minta satu baris.', shot: 'desk', pre: 0.3, post: 2.4,
+      fx: [{ at: 0, pose: ['san', 'slump'] }, { at: 0, expr: ['san', 'sad'] }, { at: 0, hide: 'gpt' }, { atEnd: 0.1, sfx: 'sad' },
+           // time skip to 15.00: San asleep on the code pile, ChatGPT slips away, Claude powers back on
+           { atEnd: 0.5, pose: ['san', 'sleep'] }, { atEnd: 0.5, prop: ['zzz', true, { pos: [0.75, 1.32, 1.05] }] }, { atEnd: 0.5, hide: 'gpt' },
+           { atEnd: 0.5, screen: ['L', 'clock', 0.01, { text: '15.00', sub: 'limit sudah reset' }] }, { atEnd: 0.5, screen: ['R', 'codeFlood', 0.01] }, { atEnd: 0.5, light: 1 }, { atEnd: 0.55, sfx: 'whoosh', gain: 0.7 }] },
+    { id: 'c2', who: 'claude', text: 'Saya balik. Kok kodenya wangi orang lain?', shot: 'claudeClose', pre: 0.2, post: 1.6, push: 0.14,
+      fx: [{ at: 0, expr: ['claude', 'neutral'] }, { at: 0, squash: 'claude' }, { at: 0, sfx: 'ding' }, { at: 0, screen: ['L', 'sniff', 1] },
+           { at: 0.9, expr: ['claude', 'sniff'] }, { at: 0.9, sfx: 'sniff' }, { atEnd: 0.2, expr: ['claude', 'squint'] }, { atEnd: 0.2, pose: ['claude', 'cross'] }, { atEnd: 0.25, sfx: 'scratch', gain: 0.8 }] },
+  ],
+};

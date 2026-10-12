@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Reel draft</title>
+  <meta name="theme-color" content="#0a1714">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a1714; --ink: #dff3ec; --muted: #93bfb2; --teal: #2fbb94; --accent: #00c896; --mint: #86e7c7;
+      --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif; --font-mono: 'DM Mono', ui-monospace, monospace;
+    }
+    html, body { height: 100%; background: #050b09; color: var(--ink); font-family: var(--font-sans); overflow: hidden; }
+    /* 9:16 stage, fills a phone, letterboxed on desktop */
+    #stage { position: fixed; left: 50%; top: 50%; aspect-ratio: 9 / 16; height: 100%; max-width: 100%; transform: translate(-50%, -50%);
+      background: var(--bg); overflow: hidden; container-type: size; }
+    @media (max-aspect-ratio: 9/16) { #stage { width: 100%; height: auto; } }
+    #scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    /* everything below scales with the stage (cqh units) so the export matches the phone view */
+    .hud-top { position: absolute; left: 4cqw; right: 4cqw; top: 3.2cqh; display: flex; justify-content: space-between; align-items: center;
+      font: 500 2.1cqh var(--font-mono); color: var(--mint); letter-spacing: 0.06em; text-transform: uppercase; z-index: 3; }
+    .brand { font: 800 2.6cqh var(--font-sans); letter-spacing: -0.02em; text-transform: none; color: var(--mint); }
+    .brand b { color: var(--accent); }
+    .clock { padding: 0.5cqh 1.4cqh; border-radius: 1cqh; background: rgba(10, 23, 20, 0.72); border: 0.15cqh solid rgba(134, 231, 199, 0.35); }
+    #sub { transform-origin: 50% 100%; position: absolute; left: 6cqw; right: 6cqw; bottom: 27cqh; text-align: center; z-index: 3; }
+    #sub .who { display: inline-block; font: 600 1.9cqh var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 0.4cqh 1.2cqh;
+      border-radius: 0.8cqh; margin-bottom: 1.1cqh; }
+    
+    
+    #sub .line { font: 800 3.9cqh/1.18 var(--font-sans); letter-spacing: -0.015em; color: #fff; text-wrap: balance;
+      text-shadow: 0 0.35cqh 0 rgba(0, 0, 0, 0.55), 0 0 2.4cqh rgba(0, 0, 0, 0.6); }
+    #sub .line .w { opacity: 0.18; transition: opacity 0.08s linear; }
+    #sub .line .w.on { opacity: 1; }
+    /* chat strip at the bottom, like an agent app */
+    .strip { position: absolute; left: 4cqw; right: 4cqw; bottom: 4.2cqh; z-index: 3; border-radius: 2.2cqh; padding: 1.6cqh 1.8cqh;
+      background: rgba(16, 37, 32, 0.9); border: 0.15cqh solid rgba(47, 187, 148, 0.45); box-shadow: 0 1.5cqh 4cqh rgba(0, 0, 0, 0.45); }
+    .strip-top { display: flex; align-items: center; gap: 1.2cqh; margin-bottom: 1.2cqh; }
+    .dot { width: 3.6cqh; height: 3.6cqh; border-radius: 1cqh; display: grid; place-items: center; background: #fff; color: #0a1714;
+      font: 800 1.7cqh var(--font-mono); box-shadow: 0 0 1.6cqh rgba(255, 255, 255, 0.5); }
+    .strip-name { font: 700 2cqh var(--font-sans); }
+    .strip-state { margin-left: auto; font: 500 1.6cqh var(--font-mono); color: var(--accent); }
+    .strip-input { display: flex; align-items: center; gap: 1cqh; padding: 1.2cqh 1.4cqh; border-radius: 1.4cqh; background: #0a1714;
+      border: 0.15cqh solid rgba(134, 231, 199, 0.25); font: 500 2.05cqh var(--font-mono); color: var(--ink); min-height: 5.6cqh; }
+    .strip-input .pr { color: var(--accent); }
+    .caret { display: inline-block; width: 1cqh; height: 2.4cqh; background: var(--accent); vertical-align: middle; margin-left: 0.3cqh; }
+    /* closing card */
+    #end { position: absolute; inset: 0; z-index: 4; display: grid; place-items: center; text-align: center; padding: 0 8cqw; opacity: 0;
+      background: radial-gradient(ellipse 80% 55% at 50% 45%, rgba(10, 23, 20, 0.55), rgba(5, 11, 9, 0.9)); pointer-events: none; }
+    #end .t { font: 800 5.4cqh/1.08 var(--font-sans); letter-spacing: -0.03em; color: #fff; text-wrap: balance; }
+    #end .t b { color: var(--accent); }
+    #end .cta { margin-top: 3.4cqh; display: inline-block; font: 700 2.6cqh var(--font-sans); padding: 1.6cqh 3cqh; border-radius: 99cqh;
+      background: var(--accent); color: #062019; }
+    #end .site { margin-top: 2.2cqh; font: 500 2cqh var(--font-mono); color: var(--mint); }
+    #play { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; background: rgba(5, 11, 9, 0.55); border: 0; color: #fff; cursor: pointer;
+      font: 700 2.4cqh var(--font-sans); }
+    #play span { padding: 1.8cqh 3.4cqh; border-radius: 99cqh; background: var(--accent); color: #062019; box-shadow: 0 1cqh 3cqh rgba(0, 0, 0, 0.4); }
+    body.render #play { display: none; }
+    .draft { position: absolute; left: 4cqw; top: 7.6cqh; z-index: 3; font: 500 1.5cqh var(--font-mono); color: rgba(223, 243, 236, 0.55); letter-spacing: 0.06em; }
+    body.render .draft { display: none; }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="scene"></canvas>
+    <div class="hud-top"><span class="brand">weed<b>Labs</b></span><span class="clock" id="clock">02.58</span></div>
+    <div class="draft">DRAFT · NOT POSTED</div>
+    <div id="sub"><div class="who"></div><div class="line"></div></div>
+    <div class="strip">
+      <div class="strip-top"><div class="dot" id="strip-dot">C</div><div class="strip-name" id="strip-name">Claude</div><div class="strip-state" id="state">online</div></div>
+      <div class="strip-input"><span class="pr">&gt;</span><span id="typed"></span><span class="caret" id="caret"></span></div>
+    </div>
+    <div id="end"><div><div class="t">Komen <b>“VIBE”</b> kalau ini kamu banget.</div><div class="cta">Komen “VIBE”</div><div class="site">weedlabs.online</div></div></div>
+    <button id="play" type="button"><span>▶ Putar dengan suara</span></button>
+  </div>
+  <script type="module">
+import { run, params } from "/morphy/engine.js?v=1";
+const id = (params.get("story") || "limit-jam-tiga").replace(/[^a-z0-9-]/g, "");
+import(`/morphy/stories/${id}.js?v=1`).then((m) => run(m.default));
+</script>
+</body>
+</html>
