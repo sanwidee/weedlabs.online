@@ -1,0 +1,65 @@
+[
+  {
+    "id": "s1",
+    "speaker": "SAN",
+    "text": "How many releases can we ship before Wednesday?",
+    "file": "s1.wav",
+    "duration_s": 2.247
+  },
+  {
+    "id": "a1",
+    "speaker": "AGENT",
+    "text": "Three. Want me to wake the squads?",
+    "file": "a1.wav",
+    "duration_s": 1.633
+  },
+  {
+    "id": "s2",
+    "speaker": "SAN",
+    "text": "Pause all the ads.",
+    "file": "s2.wav",
+    "duration_s": 1.126
+  },
+  {
+    "id": "a2",
+    "speaker": "AGENT",
+    "text": "Done. Meta is sad. Your wallet is less sad.",
+    "file": "a2.wav",
+    "duration_s": 2.248
+  },
+  {
+    "id": "s3",
+    "speaker": "SAN",
+    "text": "I can't even sell this.",
+    "file": "s3.wav",
+    "duration_s": 1.231
+  },
+  {
+    "id": "a3",
+    "speaker": "AGENT",
+    "text": "That's why I emailed your whole list while you slept.",
+    "file": "a3.wav",
+    "duration_s": 2.243
+  },
+  {
+    "id": "s4",
+    "speaker": "SAN",
+    "text": "Why do you keep saying 'still waiting on the Vicca squad'?",
+    "file": "s4.wav",
+    "duration_s": 2.555
+  },
+  {
+    "id": "a4",
+    "speaker": "AGENT",
+    "text": "Because I'm loyal. And they're slow.",
+    "file": "a4.wav",
+    "duration_s": 1.945
+  },
+  {
+    "id": "a5",
+    "speaker": "AGENT",
+    "text": "One guy. Five products. A dozen agents.",
+    "file": "a5.wav",
+    "duration_s": 2.127
+  }
+]
