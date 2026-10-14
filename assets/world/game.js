@@ -1,6 +1,7 @@
 // Weed Labs walkable block world. Every building is a product; walk to its door to see what it does.
 // Controls: WASD / arrows (Shift runs), or press-and-drag anywhere for a floating joystick (touch and mouse).
-// Debug: ?shot=intro|spawn|hq|qlipper… jumps straight to a view for screenshots.
+// Debug: ?shot=intro|spawn|hq|qlipper|library… jumps straight to a view for screenshots.
+// Enter-building animation, framed tools and the private library live in library.js (lazy).
 const $ = (s) => document.querySelector(s);
 const canvas = $('#game');
 const params = new URLSearchParams(location.search);
@@ -99,7 +100,7 @@ function start(THREE) {
   const SPOTS = [
     { id: 'hq', name: 'Weed Labs HQ', domain: 'weedlabs.online', href: '/classic/', go: 'See everything in list view', sameTab: true, badge: 'HQ', swatch: '#0d9373',
       desc: 'Where every product on this island gets designed, built and shipped. One person, one server, a lot of late nights.',
-      r: { x0: -4, x1: 4, z0: -14, z1: -8 }, h: 7, wall: '#e9f7f2', corner: '#0d9373', roof: '#07705a', front: 'glass', hq: true },
+      r: { x0: -4, x1: 4, z0: -14, z1: -8 }, h: 7, wall: '#e9f7f2', corner: '#0d9373', roof: '#07705a', front: 'glass', hq: true, classic: true },
     { id: 'qlipper', name: 'Qlipper AI', domain: 'qlipper.id', href: 'https://qlipper.id', badge: 'Product', swatch: '#F59E0B',
       desc: 'Turns long podcasts into shorts on your own GPU. Runs locally, no cloud upload, pay once.',
       r: { x0: -21, x1: -15, z0: -13, z1: -8 }, h: 4, wall: '#FFFBF2', corner: '#F59E0B', roof: '#F59E0B' },
@@ -112,6 +113,9 @@ function start(THREE) {
     { id: 'pidgo', name: 'Pidgo', domain: 'pidgoapp.online', href: 'https://pidgoapp.online', badge: 'Product', swatch: '#b3244f',
       desc: 'AI landing page generator with the tracking pixel already wired in.',
       r: { x0: 15, x1: 21, z0: 0, z1: 5 }, h: 4, wall: '#f0e6d3', corner: '#3b352c', roof: '#b3244f' },
+    { id: 'library', name: 'Perpustakaan', domain: 'khusus pemilik', href: '/?enter=library', go: 'Masuk perpustakaan', badge: 'Privat', swatch: '#8a5a2e', sameTab: true,
+      desc: 'Arsip dokumen Weed Labs. Khusus pemilik, masuk dengan Google.',
+      r: { x0: 15, x1: 21, z0: 12, z1: 17 }, h: 4, wall: '#f1e4c3', corner: '#7b4f2a', roof: '#8a5a2e', library: true },
     { id: 'wads', name: 'Wads', domain: 'wads.weedlabs.online', href: 'https://wads.weedlabs.online', badge: 'New', swatch: '#198A86',
       desc: 'Creative companion for video ads. Inspiration in, blueprint out, ads shipped. The newest building, still going up.',
       r: { x0: 6, x1: 11, z0: 9, z1: 13 }, h: 5, scaffold: true },
@@ -161,9 +165,10 @@ function start(THREE) {
       [0, 1, 2].forEach((d) => put('s#07705a', 0, y0 + d, -11));
       [[-1, 3], [-2, 4], [-3, 4], [1, 3], [2, 4], [3, 5]].forEach(([dx, dy]) => put('sprout', dx, y0 + dy, -11));
     }
+    if (p.library) for (let x = r.x0 + 1; x < r.x1; x++) put('s' + ['#2f6b4f', '#c8553d', '#e0a84a', '#3b5b7a', '#8c2f39', '#6a4c93'][(x * 7 + 3) % 6], x, h + 3, r.z1, { sx: 0.7, sz: 0.5, sy: 0.7 + ((x * 5) % 4) * 0.2, force: true });
     p.door = { x: doorX, z: r.z1 };
     p.zone = { x0: doorX - 1.6, x1: doorX + 1.6, z0: r.z1 + 0.5, z1: r.z1 + 2.9 };
-    p.top = h + (p.hq ? 9 : 3) + 0.4;
+    p.top = h + (p.hq ? 9 : p.library ? 4 : 3) + 0.4;
   }
   function scaffold(p) {
     const { r } = p;
@@ -333,19 +338,36 @@ function start(THREE) {
     card.querySelector('.card-domain').textContent = s.domain;
     card.querySelector('.card-badge').textContent = s.badge;
     card.querySelector('.card-desc').textContent = s.desc;
-    const go = card.querySelector('.card-go');
     go.href = s.href; go.textContent = s.go || (s.badge === 'Free' ? `Open ${s.name}` : `Open ${s.domain} ↗`);
-    if (s.sameTab) { go.removeAttribute('target'); } else { go.target = '_blank'; }
+    if (s.sameTab || !s.classic) go.removeAttribute('target'); else go.target = '_blank';
     card.classList.add('open'); card.setAttribute('aria-hidden', 'false');
   }
   function closeCard() { card.classList.remove('open'); card.setAttribute('aria-hidden', 'true'); cardSpot = null; cardManual = false; }
+  const go = card.querySelector('.card-go');
+  go.addEventListener('click', (e) => { // plain click plays the enter animation; modified clicks keep native behaviour
+    if (!cardSpot || cardSpot.classic || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+    e.preventDefault(); const s = cardSpot;
+    lib().then((l) => l.visit(s)).catch(() => { if (s.id !== 'library') location.assign(s.href); });
+  });
   card.querySelector('.card-close').addEventListener('click', () => { dismissed = cardSpot; closeCard(); });
   card.addEventListener('pointerdown', (e) => e.stopPropagation());
+
+  // ---------- lazy library / enter-building module ----------
+  let locked = false, cine = null, alt = null, libP = null;
+  const anchorOf = (s) => (s.door ? { x: s.door.x, z: s.door.z } : (({ x0, x1, z0, z1 }) => ({ x: (x0 + x1) / 2, z: (z0 + z1) / 2 }))(footprint(s)));
+  const lib = () => libP || (libP = import('./library.js?v=20261014a').then((m) => m.default({
+    THREE, renderer, canvas, params, camPos, camLook, spots: byId, anchor: anchorOf,
+    lock: (b) => { locked = b; if (b) { keys.clear(); joy = null; joyEl.classList.remove('on'); } },
+    setCine: (f) => { cine = f; }, setAlt: (f) => { alt = f; }, setPlayerVisible: (v) => { player.visible = v; },
+    closeCard: () => { dismissed = cardSpot; closeCard(); },
+    placeOutside: (s) => { const a = anchorOf(s); pos.set(a.x, 1, a.z + 1.9); yaw = Math.PI; dismissed = s; },
+  })));
 
   // ---------- input ----------
   const keys = new Set();
   const KEYMAP = { KeyW: 'u', ArrowUp: 'u', KeyS: 'd', ArrowDown: 'd', KeyA: 'l', ArrowLeft: 'l', KeyD: 'r', ArrowRight: 'r' };
   addEventListener('keydown', (e) => {
+    if (locked) return;
     if (e.target.closest && e.target.closest('a,button,input')) { if (e.key !== 'Escape') return; }
     if (KEYMAP[e.code]) { keys.add(KEYMAP[e.code]); e.preventDefault(); beginPlay(); }
     if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') keys.add('run');
@@ -359,7 +381,7 @@ function start(THREE) {
   const JR = 52;
   let joy = null;
   canvas.addEventListener('pointerdown', (e) => {
-    if (joy || !playing) return;
+    if (joy || !playing || locked) return;
     joy = { id: e.pointerId, ox: e.clientX, oy: e.clientY, x: 0, y: 0 };
     try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* older Safari */ }
     joyEl.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
@@ -442,6 +464,7 @@ function start(THREE) {
     const s = byId[shot];
     if (s) { pos.set(s.door ? s.door.x : (s.zone.x0 + s.zone.x1) / 2, 1, s.zone ? s.zone.z1 - 0.6 : 18); yaw = Math.PI; }
     beginPlay(); flyT = 1;
+    if (shot === 'library') lib().then((l) => l.enterLibrary({ instant: true }));
   }
 
   // ---------- camera ----------
@@ -465,6 +488,11 @@ function start(THREE) {
     out.set(lx + Math.sin(CY) * dist * 0.6, 1.2 + dist * 0.8, lz + Math.cos(CY) * dist * 0.6);
   }
   camGoal(camPos, camLook);
+  if (params.get('enter') === 'library') { // back from Google sign-in: teleport to the door and walk in
+    const d = byId.library.door; pos.set(d.x, 1, d.z + 1.9); yaw = Math.PI; dismissed = byId.library;
+    beginPlay(); flyT = 1; camGoal(camPos, camLook); history.replaceState(null, '', location.pathname);
+    lib().then((l) => l.enterLibrary());
+  }
 
   // ---------- loop ----------
   const v3 = new THREE.Vector3();
@@ -514,6 +542,8 @@ function start(THREE) {
       introT += dt * 0.08;
       camLook.set(0, 3, -2);
       camPos.set(Math.sin(introT) * 40, 30, -2 + Math.cos(introT) * 40);
+    } else if (cine) {
+      cine(now);
     } else {
       camGoal(tmp, tmp2);
       if (flyT < 1) { flyT = Math.min(1, flyT + dt * 0.7); const e = 1 - Math.pow(1 - flyT, 3); camPos.lerp(tmp, e * 0.25 + 0.02); camLook.lerp(tmp2, e * 0.25 + 0.02); }
@@ -538,7 +568,7 @@ function start(THREE) {
     });
 
     drawMinimap();
-    renderer.render(scene, camera);
+    if (alt) alt(dt, now); else renderer.render(scene, camera);
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
