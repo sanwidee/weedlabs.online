@@ -12,3 +12,4 @@
 library/
 # reel previews (masters on the SSD; uploaded straight to the server)
 morphy/previews/
+morphy/masters/
