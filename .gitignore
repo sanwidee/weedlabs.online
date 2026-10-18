@@ -6,3 +6,9 @@
 *.swp
 .vscode/
 .idea/
+
+# Live-only content, never in this public repo (14/18 Oct 2026):
+# private Library pages (served behind SSO, source repo sanwidee/weedlabs-library)
+library/
+# reel previews (masters on the SSD; uploaded straight to the server)
+morphy/previews/
